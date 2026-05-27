@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
 
   try {
     await resend.emails.send({
-      from: "Ozhenai <onboarding@resend.dev>",
+      from: "Ozhenai <hello@ozhenai.com>",
       to: email,
       subject: "You're on the Ozhenai waitlist!",
       html: `
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     });
 
     await resend.emails.send({
-      from: "Ozhenai <onboarding@resend.dev>",
+      from: "Ozhenai <hello@ozhenai.com>",
       to: "tinytalesbyale@gmail.com",
       subject: `New waitlist signup — ${customers || "unknown"} customers`,
       html: `<p>New signup: <strong>${email}</strong><br>Manages: <strong>${customers || "not specified"}</strong> customers</p>`,
