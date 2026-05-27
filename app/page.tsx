@@ -1,3 +1,5 @@
+"use client";
+
 export default function Home() {
   return (
     <main style={{ fontFamily: "Georgia, serif", background: "#0d0d0f", 
@@ -94,19 +96,54 @@ export default function Home() {
 
       <section id="waitlist" style={{ padding: "80px 40px", textAlign: "center" }}>
         <h2 style={{ fontSize: 28, marginBottom: 12 }}>Join the waitlist</h2>
-        <p style={{ color: "#a8a49c", marginBottom: 32, fontSize: 15 }}>
+        <p style={{ color: "#a8a49c", marginBottom: 16, fontSize: 15 }}>
           Early access opens soon. Be first.
         </p>
-        <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          <input type="email" placeholder="your@email.com"
+        <p style={{ color: "#c9a84c", marginBottom: 32, fontSize: 13, fontFamily: "monospace" }}>
+          How many customers do you manage renewals for?
+        </p>
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 12 }}>
+          <input 
+            type="email" 
+            id="waitlist-email"
+            placeholder="your@email.com"
             style={{ padding: "12px 18px", borderRadius: 8, 
                      border: "1px solid rgba(201,168,76,0.3)",
                      background: "#161619", color: "#e8e4dc", 
-                     fontSize: 14, width: 280, outline: "none" }} />
-          <button style={{ background: "#c9a84c", color: "#0d0d0f", 
-                           padding: "12px 28px", borderRadius: 8, 
-                           fontWeight: 700, fontSize: 14, border: "none", 
-                           cursor: "pointer" }}>
+                     fontSize: 14, width: 280, outline: "none" }} 
+          />
+          <select
+            id="waitlist-customers"
+            style={{ padding: "12px 18px", borderRadius: 8,
+                     border: "1px solid rgba(201,168,76,0.3)",
+                     background: "#161619", color: "#e8e4dc",
+                     fontSize: 14, width: 280, outline: "none" }}>
+            <option value="">Number of customers...</option>
+            <option value="1-10">1–10 customers</option>
+            <option value="11-50">11–50 customers</option>
+            <option value="51-200">51–200 customers</option>
+            <option value="200+">200+ customers</option>
+          </select>
+          <button 
+            onClick={async () => {
+              const email = (document.getElementById("waitlist-email") as HTMLInputElement).value;
+              const customers = (document.getElementById("waitlist-customers") as HTMLSelectElement).value;
+              if (!email) return alert("Please enter your email.");
+              const res = await fetch("/api/waitlist", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, customers })
+              });
+              if (res.ok) {
+                alert("You're on the waitlist! Check your email.");
+              } else {
+                alert("Something went wrong. Please try again.");
+              }
+            }}
+            style={{ background: "#c9a84c", color: "#0d0d0f", 
+                     padding: "12px 28px", borderRadius: 8, 
+                     fontWeight: 700, fontSize: 14, border: "none", 
+                     cursor: "pointer", width: 280 }}>
             Get early access
           </button>
         </div>
