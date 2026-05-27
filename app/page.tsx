@@ -6,7 +6,7 @@ export default function Home() {
                     justifyContent: "space-between", alignItems: "center",
                     borderBottom: "1px solid rgba(201,168,76,0.15)" }}>
         <div style={{ fontWeight: 700, fontSize: 18, color: "#c9a84c" }}>
-          RenewAI
+          Ozhenai
         </div>
         <a href="#waitlist" style={{ background: "#c9a84c", color: "#0d0d0f",
            padding: "8px 20px", borderRadius: 8, fontWeight: 700,
@@ -28,7 +28,7 @@ export default function Home() {
         </h1>
         <p style={{ fontSize: 17, color: "#a8a49c", maxWidth: 520, 
                     margin: "0 auto 48px", lineHeight: 1.7 }}>
-          RenewAI reads your customer emails, tracks renewals, and writes 
+          Ozhenai reads your customer emails, tracks renewals, and writes 
           hyper-personal outreach — then waits for your approval before sending.
         </p>
         <a href="#waitlist" style={{ background: "#c9a84c", color: "#0d0d0f",
@@ -115,7 +115,7 @@ export default function Home() {
       <footer style={{ padding: "32px 40px", 
                        borderTop: "1px solid rgba(201,168,76,0.1)",
                        textAlign: "center", fontSize: 12, color: "#6a675f" }}>
-        © 2026 RenewAI · Built with Claude
+        © 2026 Ozhenai · Built with Claude
       </footer>
     </main>
   )
