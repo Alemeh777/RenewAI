@@ -1,4 +1,5 @@
 "use client";
+import { SignInButton, SignUpButton } from "@clerk/nextjs";
 
 export default function Home() {
   return (
@@ -10,11 +11,23 @@ export default function Home() {
         <div style={{ fontWeight: 700, fontSize: 18, color: "#c9a84c" }}>
           Ozhenai
         </div>
-        <a href="#waitlist" style={{ background: "#c9a84c", color: "#0d0d0f",
-           padding: "8px 20px", borderRadius: 8, fontWeight: 700,
-           fontSize: 13, textDecoration: "none" }}>
-          Join waitlist
-        </a>
+       <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+  <SignInButton mode="modal">
+    <button style={{ background: "transparent", color: "#c9a84c",
+      padding: "8px 16px", borderRadius: 8, fontWeight: 700,
+      fontSize: 13, border: "1px solid rgba(201,168,76,0.4)",
+      cursor: "pointer" }}>
+      Sign in
+    </button>
+  </SignInButton>
+  <SignUpButton mode="modal">
+    <button style={{ background: "#c9a84c", color: "#0d0d0f",
+      padding: "8px 16px", borderRadius: 8, fontWeight: 700,
+      fontSize: 13, border: "none", cursor: "pointer" }}>
+      Get started
+    </button>
+  </SignUpButton>
+</div>
       </nav>
 
       <section style={{ textAlign: "center", padding: "100px 40px 80px" }}>
