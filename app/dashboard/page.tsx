@@ -1,10 +1,13 @@
 "use client";
-import { useUser } from "@clerk/nextjs";
+import { useUser, useClerk } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../../lib/supabase";
 
 export default function Dashboard() {
   const { user, isLoaded } = useUser();
+  const { signOut } = useClerk();
+  const router = useRouter();
   const [customers, setCustomers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
@@ -67,10 +70,12 @@ export default function Dashboard() {
           <span style={{ fontSize: 12, color: "#6a675f" }}>
             {user.emailAddresses[0].emailAddress}
           </span>
-          <a href="/" style={{ fontSize: 11, color: "#c9a84c",
-                               textDecoration: "none", fontFamily: "monospace" }}>
-            Sign out
-          </a>
+         <button 
+  onClick={() => signOut(() => router.push("/"))}
+  style={{ fontSize: 11, color: "#c9a84c", background: "transparent",
+           border: "none", cursor: "pointer", fontFamily: "monospace" }}>
+  Sign out
+</button>
         </div>
       </nav>
 

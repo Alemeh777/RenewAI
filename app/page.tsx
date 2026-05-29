@@ -1,7 +1,16 @@
 "use client";
 import { SignInButton, SignUpButton } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
+import { useEffect } from "react";
 
 export default function Home() {
+   const router = useRouter();
+  const { isSignedIn } = useUser();
+
+  useEffect(() => {
+    if (isSignedIn) router.push("/dashboard");
+  }, [isSignedIn]);
   return (
     <main style={{ fontFamily: "Georgia, serif", background: "#0d0d0f", 
                    color: "#e8e4dc", minHeight: "100vh" }}>
