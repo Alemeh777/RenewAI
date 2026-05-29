@@ -41,6 +41,21 @@ const [showEmailModal, setShowEmailModal] = useState(false);
       renew_days: parseInt(form.renew_days) || 90,
       user_id: user!.id,
     });
+    // Auto-fetch company news
+try {
+  const searchRes = await fetch("/api/search-company", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ company: form.company, domain: form.domain })
+  });
+  const searchData = await searchRes.json();
+  if (searchData.news) {
+    await supabase.from("customers")
+      .update({ latest_news: searchData.news })
+      .eq("user_id", user!.id)
+      .eq("email", form.email);
+  }
+} catch (e) {}
     setForm({ name: "", company: "", email: "", domain: "",
       plan: "", arr: "", currency: "€", renew_days: "90" });
     setShowAdd(false);

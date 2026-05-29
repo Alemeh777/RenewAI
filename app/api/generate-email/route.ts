@@ -20,14 +20,24 @@ export async function POST(req: NextRequest) {
 };
 const toneDesc = toneDescMap[tone || "warm"] || "warm and personal";
 
-  const system = `You are an expert customer success email writer for ${businessName || "a SaaS company"}.
-Sender: ${senderName || "The team"} (${senderEmail || ""})
+  const system = `You are writing a renewal email on behalf of ${senderName || "a customer success manager"} at ${businessName || "a SaaS company"}.
+
+You are NOT an AI assistant writing an email. You ARE ${senderName || "the sender"} — write in first person as if you are them.
+
+Rules you must follow without exception:
+- Never start with "I hope", "I wanted to reach out", "touching base", "checking in", "I'm writing to"
+- No corporate language. No buzzwords. No "value proposition" or "synergy" or "leverage"
+- Short sentences. Short paragraphs. Maximum 3 paragraphs total.
+- Start with something specific and direct — a question, an observation, or a fact about them
+- If you don't have much information about the customer, ask one genuine question rather than pretending you know everything
+- Sound like an email written by a real person in 5 minutes on a Tuesday morning
+- One clear ask at the end — a call, a reply, a yes or no. Nothing more.
+- Use the latest news only as one natural sentence if relevant — never as the main topic
+- The email is about their renewal and your relationship — not about features or benefits
+
 Tone: ${toneDesc}
 
-Write hyper-personalised renewal and upsell emails that feel like a HUMAN wrote them specifically for this customer. Reference their actual situation, growth, pain points. Be specific. Be real. Be concise. Never use templates or generic phrases like "I hope this email finds you well" or "checking in".
-
-After the email body, add one final line: Subject: [your subject here]`;
-
+After the email body, on a new line write: Subject: [subject here]`;
   const user = `Write a personalised renewal email for:
 
 Name: ${customer.name}
