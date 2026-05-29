@@ -15,6 +15,9 @@ export default function Dashboard() {
     name: "", company: "", email: "", domain: "",
     plan: "", arr: "", currency: "€", renew_days: "90"
   });
+  const [generatedEmail, setGeneratedEmail] = useState<string>("");
+const [generatingFor, setGeneratingFor] = useState<string | null>(null);
+const [showEmailModal, setShowEmailModal] = useState(false);
 
   useEffect(() => {
     if (user) fetchCustomers();
@@ -43,6 +46,29 @@ export default function Dashboard() {
     setShowAdd(false);
     fetchCustomers();
   }
+  async function generateEmail(customer: any) {
+  setGeneratingFor(customer.id);
+  setGeneratedEmail("");
+  setShowEmailModal(true);
+  try {
+    const res = await fetch("/api/generate-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        customer,
+        senderName: user?.firstName + " " + user?.lastName,
+        senderEmail: user?.emailAddresses[0].emailAddress,
+        businessName: "Ozhenai",
+        tone: "warm"
+      })
+    });
+    const data = await res.json();
+    setGeneratedEmail(data.email || data.error);
+  } catch (e) {
+    setGeneratedEmail("Error generating email. Please try again.");
+  }
+  setGeneratingFor(null);
+}
 
   function daysColor(d: number) {
     return d <= 14 ? "#e05c5c" : d <= 40 ? "#c9a84c" : "#4caf7d";
@@ -155,7 +181,7 @@ export default function Dashboard() {
                             fontSize: 12 }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid rgba(201,168,76,0.13)" }}>
-                  {["Customer", "Company", "Plan", "ARR", "Renewal", "Health"].map(h => (
+                  {["Customer", "Company", "Plan", "ARR", "Renewal", "Health", "Action"].map(h => (
                     <th key={h} style={{ padding: "12px 16px", textAlign: "left",
                                          color: "#6a675f", fontWeight: 700,
                                          textTransform: "uppercase",
@@ -194,6 +220,16 @@ export default function Dashboard() {
                         {c.health}/100
                       </span>
                     </td>
+                    <td style={{ padding: "12px 16px" }}>
+  <button
+    onClick={() => generateEmail(c)}
+    style={{ background: "rgba(201,168,76,0.15)", color: "#c9a84c",
+             border: "1px solid rgba(201,168,76,0.3)", padding: "5px 12px",
+             borderRadius: 6, fontSize: 11, cursor: "pointer",
+             fontFamily: "monospace" }}>
+    Generate
+  </button>
+</td>
                   </tr>
                 ))}
               </tbody>
@@ -201,7 +237,53 @@ export default function Dashboard() {
           </div>
         )}
       </div>
-
+{showEmailModal && (
+  <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                zIndex: 100 }}>
+    <div style={{ background: "#161619", border: "1px solid rgba(201,168,76,0.3)",
+                  borderRadius: 14, padding: "28px", width: 540,
+                  maxWidth: "95vw", maxHeight: "90vh", overflow: "auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between",
+                    alignItems: "center", marginBottom: 16 }}>
+        <div style={{ fontSize: 15, fontWeight: 700 }}>Generated Email</div>
+        <button onClick={() => setShowEmailModal(false)}
+          style={{ background: "transparent", border: "none",
+                   color: "#6a675f", cursor: "pointer", fontSize: 18 }}>✕</button>
+      </div>
+      {generatingFor ? (
+        <div style={{ textAlign: "center", padding: "40px 0", color: "#6a675f" }}>
+          <div style={{ fontSize: 24, marginBottom: 12 }}>✨</div>
+          Agent is reading customer history and writing your email...
+        </div>
+      ) : (
+        <>
+          <div style={{ background: "#0d0d0f", border: "1px solid rgba(201,168,76,0.15)",
+                        borderRadius: 8, padding: "16px", fontSize: 12,
+                        lineHeight: 1.8, color: "#e8e4dc", whiteSpace: "pre-wrap",
+                        fontFamily: "Georgia, serif", marginBottom: 14,
+                        maxHeight: 320, overflow: "auto" }}>
+            {generatedEmail}
+          </div>
+          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+            <button onClick={() => {navigator.clipboard.writeText(generatedEmail);}}
+              style={{ background: "transparent", color: "#c9a84c",
+                       border: "1px solid rgba(201,168,76,0.3)", padding: "8px 16px",
+                       borderRadius: 7, cursor: "pointer", fontSize: 12 }}>
+              Copy Email
+            </button>
+            <button onClick={() => setShowEmailModal(false)}
+              style={{ background: "#c9a84c", color: "#0d0d0f", border: "none",
+                       padding: "8px 20px", borderRadius: 7, fontWeight: 700,
+                       cursor: "pointer", fontSize: 12 }}>
+              Done
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  </div>
+)}
       {/* ADD CUSTOMER MODAL */}
       {showAdd && (
         <div style={{ position: "fixed", inset: 0,
