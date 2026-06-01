@@ -13,14 +13,10 @@ const PRICE_MAP: Record<string, string> = {
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
-    console.log('userId:', userId);
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { plan } = await req.json();
-    console.log('plan:', plan);
-    
     const priceId = PRICE_MAP[plan];
-    console.log('priceId:', priceId);
     if (!priceId) return NextResponse.json({ error: 'Invalid plan' }, { status: 400 });
 
     const session = await stripe.checkout.sessions.create({
@@ -32,9 +28,7 @@ export async function POST(req: Request) {
       metadata: { userId, plan },
     });
 
-    console.log('session url:', session.url);
     return NextResponse.json({ url: session.url });
-
   } catch (err) {
     console.error('STRIPE ERROR:', err);
     return NextResponse.json({ error: String(err) }, { status: 500 });
