@@ -53,21 +53,39 @@ export default function PricingPage() {
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleSubscribe = async (planId: string) => {
-    setLoading(planId);
+  setLoading(planId);
+  try {
+    const res = await fetch('/api/stripe/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ plan: planId }),
+    });
+
+    const text = await res.text();
+    console.log('Response:', text);
+
+    let data;
     try {
-      const res = await fetch('/api/stripe/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ plan: planId }),
-      });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(null);
+      data = JSON.parse(text);
+    } catch {
+      console.error('Not JSON:', text);
+      alert('Server error. Please try again.');
+      return;
     }
-  };
+
+    if (data.url) {
+      window.location.href = data.url;
+    } else if (data.error === 'Unauthorized') {
+      window.location.href = '/sign-in';
+    } else {
+      alert(data.error || 'Something went wrong');
+    }
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(null);
+  }
+};
 
   return (
     <main className="min-h-screen bg-gray-950 text-white py-20 px-4">
