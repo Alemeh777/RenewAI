@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@clerk/nextjs';
 
 const plans = [
   {
@@ -50,10 +51,15 @@ const plans = [
 
 export default function PricingPage() {
   const router = useRouter();
+  const { isSignedIn } = useAuth();
   const [loading, setLoading] = useState<string | null>(null);
 
   const handleSubscribe = async (planId: string) => {
   setLoading(planId);
+  if (!isSignedIn) {
+  router.push('/sign-in');
+  return;
+}
   try {
     const res = await fetch('/api/stripe/checkout', {
       method: 'POST',
