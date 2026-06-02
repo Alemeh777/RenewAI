@@ -61,7 +61,7 @@ export default function PricingPage() {
   return;
 }
   try {
-    const res = await fetch('/api/stripe/checkout', {
+    const res = await fetch(`${window.location.origin}/api/stripe/checkout`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ plan: planId }),
