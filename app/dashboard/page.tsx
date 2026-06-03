@@ -89,8 +89,8 @@ try {
     return d <= 14 ? "#e05c5c" : d <= 40 ? "#c9a84c" : "#4caf7d";
   }
 
-  if (!isLoaded) return <div className="min-h-screen bg-gray-950" />;
-if (!user) {
+ if (!isLoaded) return <div className="min-h-screen bg-gray-950" />;
+if (isLoaded && !user) {
   if (typeof window !== "undefined") window.location.href = "/sign-in";
   return null;
 }
