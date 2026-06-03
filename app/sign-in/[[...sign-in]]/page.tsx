@@ -1,4 +1,3 @@
-'use client';
 import { SignIn } from '@clerk/nextjs';
 
 export default function SignInPage() {
@@ -12,7 +11,8 @@ export default function SignInPage() {
     }}>
       <SignIn 
         forceRedirectUrl="/dashboard"
-        routing="hash"
+        routing="path"
+        path="/sign-in"
       />
     </div>
   );
