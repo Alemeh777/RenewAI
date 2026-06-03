@@ -89,11 +89,11 @@ try {
     return d <= 14 ? "#e05c5c" : d <= 40 ? "#c9a84c" : "#4caf7d";
   }
 
-  if (!isLoaded) return null;
-  if (!user) {
-    if (typeof window !== "undefined") window.location.href = "/";
-    return null;
-  }
+  if (!isLoaded) return <div className="min-h-screen bg-gray-950" />;
+if (!user) {
+  if (typeof window !== "undefined") window.location.href = "/sign-in";
+  return null;
+}
 
   return (
     <div style={{ fontFamily: "Georgia, serif", background: "#0d0d0f",
