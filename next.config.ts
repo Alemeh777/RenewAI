@@ -8,17 +8,9 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Content-Security-Policy',
-            value: '',
+            value: "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.com https://*.clerk.accounts.dev https://*.ozhenai.com; worker-src 'self' blob:;",
           },
         ],
-      },
-    ];
-  },
-  async rewrites() {
-    return [
-      {
-        source: '/__clerk/:path*',
-        destination: 'https://frontend-api.clerk.services/:path*',
       },
     ];
   },
