@@ -93,14 +93,14 @@ export default function Home() {
       <section style={{ padding: "80px 40px", textAlign: "center" }}>
         <h2 style={{ fontSize: 28, marginBottom: 12 }}>Simple pricing</h2>
         <p style={{ color: "#a8a49c", marginBottom: 48, fontSize: 15 }}>
-          1 token = 10 emails sent. Pay only for what you use.
+          Choose the plan that fits your team. Cancel anytime.
         </p>
         <div style={{ display: "inline-flex", gap: 20, flexWrap: "wrap", 
                       justifyContent: "center" }}>
           {[
-            { name: "Starter", price: "€9", desc: "10 tokens · 100 emails" },
-            { name: "Growth", price: "€29", desc: "40 tokens · 400 emails", hot: true },
-            { name: "Scale", price: "€79", desc: "120 tokens · 1,200 emails" },
+            { name: "Starter", price: "€19", desc: "50 AI email generations/month", hot: false },
+{ name: "Growth", price: "€49", desc: "200 AI email generations/month", hot: true },
+{ name: "Scale", price: "€99", desc: "Unlimited AI email generations", hot: false },
           ].map(p => (
             <div key={p.name} style={{ background: "#161619", 
                border: p.hot ? "2px solid #c9a84c" : "1px solid rgba(201,168,76,0.13)",
