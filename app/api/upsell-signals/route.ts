@@ -56,8 +56,8 @@ Identify upsell opportunities (max 3) and risk signals (max 3). Be specific and 
   const text = message.content[0].type === 'text' ? message.content[0].text : '{}';
   
   try {
-    const signals = JSON.parse(text);
-    
+const clean = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+const signals = JSON.parse(clean);    
     await supabase.from('customers').update({
       upsell: signals.upsell_signals || [],
       risk: signals.risk_signals || [],
