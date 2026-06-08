@@ -80,7 +80,7 @@ Write the email. Make it feel hand-written and specific to this person only.`;
 
     // Save to approval queue
     if (userId) {
-      await supabase.from("approval_queue").insert({
+      const { error: queueError } = await supabase.from("approval_queue").insert({
         user_id: userId,
         customer_id: customer.id,
         customer_name: customer.name,
@@ -91,6 +91,8 @@ Write the email. Make it feel hand-written and specific to this person only.`;
         email_type: "renewal",
         status: "pending",
       });
+      if (queueError) console.error("Queue insert error:", queueError);
+else console.log("Saved to queue successfully");
     }
 
     return NextResponse.json({ email: text });
