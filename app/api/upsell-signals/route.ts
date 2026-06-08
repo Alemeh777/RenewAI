@@ -25,7 +25,7 @@ export async function POST(req: Request) {
   if (!customer) return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
 
   const message = await anthropic.messages.create({
-    model: 'claude-sonnet-4-5',
+    model: 'claude-sonnet-4-6',
     max_tokens: 1024,
     system: `You are a customer success analyst. Analyze customer data and identify upsell opportunities and risks.
     
