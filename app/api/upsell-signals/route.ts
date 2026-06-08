@@ -11,7 +11,7 @@ const supabase = createClient(
 const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
 export async function POST(req: Request) {
-  const { userId } = await auth();
+ try { const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { customerId } = await req.json();
@@ -58,7 +58,6 @@ Identify upsell opportunities (max 3) and risk signals (max 3). Be specific and 
   try {
     const signals = JSON.parse(text);
     
-    // Update customer with new signals
     await supabase.from('customers').update({
       upsell: signals.upsell_signals || [],
       risk: signals.risk_signals || [],
@@ -66,7 +65,23 @@ Identify upsell opportunities (max 3) and risk signals (max 3). Be specific and 
     }).eq('id', customerId);
 
     return NextResponse.json(signals);
-  } catch {
+  } catch (err) {
+    console.error('Upsell signals error:', err, 'Raw text:', text);
     return NextResponse.json({ error: 'Failed to parse signals' }, { status: 500 });
   }
+  await supabase.from('customers').update({
+      upsell: signals.upsell_signals || [],
+      risk: signals.risk_signals || [],
+      health: signals.health_score || customer.health,
+    }).eq('id', customerId);
+
+    return NextResponse.json(signals);
+  } catch (err) {
+    console.error('Upsell signals error:', err, 'Raw text:', text);
+    return NextResponse.json({ error: 'Failed to parse signals' }, { status: 500 });
+  }
+} catch (err: any) {
+  console.error('Upsell route error:', err.message);
+  return NextResponse.json({ error: err.message }, { status: 500 });
+}
 }
