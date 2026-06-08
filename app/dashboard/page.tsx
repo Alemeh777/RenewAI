@@ -105,7 +105,15 @@ async function analyseCustomer(customer: any) {
   } catch (e) {
     alert("Error analysing customer.");
   }
-  setAnalysingFor(null);
+setAnalysingFor(null);
+}
+
+async function updateRenewalStatus(customerId: string, status: string) {
+  await supabase
+    .from('customers')
+    .update({ renewal_status: status })
+    .eq('id', customerId);
+  fetchCustomers();
 }
 
   function daysColor(d: number) {
@@ -220,7 +228,7 @@ if (isLoaded && !user) {
                             fontSize: 12 }}>
               <thead>
                 <tr style={{ borderBottom: "1px solid rgba(201,168,76,0.13)" }}>
-                  {["Customer", "Company", "Plan", "ARR", "Renewal", "Health", "Action"].map(h => (
+                  {["Customer", "Company", "Plan", "ARR", "Renewal", "Health", "Status", "Action"].map(h => (
                     <th key={h} style={{ padding: "12px 16px", textAlign: "left",
                                          color: "#6a675f", fontWeight: 700,
                                          textTransform: "uppercase",
@@ -258,6 +266,27 @@ if (isLoaded && !user) {
                                     : c.health > 60 ? "#c9a84c" : "#e05c5c" }}>
                         {c.health}/100
                       </span>
+                    </td>
+                    <td style={{ padding: "12px 16px" }}>
+                      <select
+                        value={c.renewal_status || 'not_started'}
+                        onChange={e => updateRenewalStatus(c.id, e.target.value)}
+                        style={{
+                          background: c.renewal_status === 'renewed' ? 'rgba(76,175,125,0.15)'
+                                    : c.renewal_status === 'in_discussion' ? 'rgba(201,168,76,0.15)'
+                                    : 'rgba(224,92,92,0.1)',
+                          color: c.renewal_status === 'renewed' ? '#4caf7d'
+                               : c.renewal_status === 'in_discussion' ? '#c9a84c'
+                               : '#e05c5c',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                          borderRadius: 6, padding: '4px 8px',
+                          fontSize: 11, cursor: 'pointer',
+                          fontFamily: 'monospace'
+                        }}>
+                        <option value="not_started">not started</option>
+                        <option value="in_discussion">in discussion</option>
+                        <option value="renewed">renewed ✓</option>
+                      </select>
                     </td>
                     <td style={{ padding: "12px 16px" }}>
   <div style={{ display: "flex", gap: 6 }}>
