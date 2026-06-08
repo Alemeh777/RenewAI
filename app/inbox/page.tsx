@@ -3,6 +3,7 @@ import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 
 
+
 type QueueItem = {
   id: string;
   customer_name: string;
@@ -21,6 +22,8 @@ export default function InboxPage() {
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<QueueItem | null>(null);
   const [sending, setSending] = useState(false);
+  const [editing, setEditing] = useState(false);
+const [editedBody, setEditedBody] = useState('');
 
   useEffect(() => {
     if (user) fetchQueue();
@@ -35,13 +38,15 @@ export default function InboxPage() {
 
 async function approveAndSend(item: QueueItem) {
   setSending(true);
+  const finalBody = editing ? editedBody : item.email_body;
   await fetch('/api/queue', {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: item.id, status: 'approved' })
+    body: JSON.stringify({ id: item.id, status: 'approved', email_body: finalBody })
   });
   setQueue(q => q.filter(i => i.id !== item.id));
   setSelected(null);
+  setEditing(false);
   setSending(false);
   alert(`Email approved! In production this would send to ${item.customer_email}`);
 }
@@ -86,7 +91,7 @@ async function reject(item: QueueItem) {
               {queue.map(item => (
                 <div
                   key={item.id}
-                  onClick={() => setSelected(item)}
+                  onClick={() => { setSelected(item); setEditing(false); }}
                   style={{
                     background: selected?.id === item.id ? '#1e1e22' : '#161619',
                     border: selected?.id === item.id ? '1px solid #c9a84c' : '1px solid rgba(201,168,76,0.13)',
@@ -123,10 +128,29 @@ async function reject(item: QueueItem) {
                 <div style={{ marginBottom: 24 }}>
                   <div style={{ fontSize: 12, color: '#a8a49c', marginBottom: 4, fontFamily: 'monospace', textTransform: 'uppercase' }}>Subject</div>
                   <div style={{ fontSize: 15, fontWeight: 700 }}>{selected.email_subject}</div>
+                  <button
+  onClick={() => { setEditing(!editing); setEditedBody(selected.email_body); }}
+  style={{ background: 'transparent', color: '#c9a84c', border: '1px solid rgba(201,168,76,0.3)', borderRadius: 8, padding: '4px 12px', fontSize: 12, cursor: 'pointer', marginTop: 8 }}
+>
+  {editing ? 'Cancel edit' : '✏️ Edit'}
+</button>
                 </div>
                 <div style={{ marginBottom: 32 }}>
                   <div style={{ fontSize: 12, color: '#a8a49c', marginBottom: 12, fontFamily: 'monospace', textTransform: 'uppercase' }}>Email</div>
-                  <div style={{ fontSize: 14, lineHeight: 1.8, whiteSpace: 'pre-wrap', color: '#e8e4dc' }}>{selected.email_body}</div>
+                  {editing ? (
+  <textarea
+    value={editedBody}
+    onChange={e => setEditedBody(e.target.value)}
+    style={{
+      width: '100%', fontSize: 14, lineHeight: 1.8, color: '#e8e4dc',
+      background: '#0d0d0f', border: '1px solid rgba(201,168,76,0.3)',
+      borderRadius: 8, padding: 12, minHeight: 200, resize: 'vertical',
+      fontFamily: 'Georgia, serif', outline: 'none'
+    }}
+  />
+) : (
+  <div style={{ fontSize: 14, lineHeight: 1.8, whiteSpace: 'pre-wrap', color: '#e8e4dc' }}>{selected.email_body}</div>
+)}
                 </div>
                 <div style={{ display: 'flex', gap: 12 }}>
                   <button
