@@ -22,6 +22,7 @@ const [analysingFor, setAnalysingFor] = useState<string | null>(null);
 const [signals, setSignals] = useState<any>(null);
 const [showSignalsModal, setShowSignalsModal] = useState(false);
 const [signalsCustomer, setSignalsCustomer] = useState<any>(null);
+const [schedulerRunning, setSchedulerRunning] = useState(false);
 
   useEffect(() => {
     if (user) fetchCustomers();
@@ -113,7 +114,24 @@ async function updateRenewalStatus(customerId: string, status: string) {
     .from('customers')
     .update({ renewal_status: status })
     .eq('id', customerId);
-  fetchCustomers();
+ fetchCustomers();
+}
+
+async function runScheduler() {
+  setSchedulerRunning(true);
+  try {
+    const res = await fetch('/api/scheduler', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user?.id, manual: true })
+    });
+    const data = await res.json();
+    alert(data.message);
+    fetchCustomers();
+  } catch (e) {
+    alert('Scheduler error. Please try again.');
+  }
+  setSchedulerRunning(false);
 }
 
   function daysColor(d: number) {
@@ -165,12 +183,23 @@ if (isLoaded && !user) {
               {customers.length} registered companies
             </p>
           </div>
-          <button onClick={() => setShowAdd(true)}
-            style={{ background: "#c9a84c", color: "#0d0d0f",
-                     padding: "9px 20px", borderRadius: 8, fontWeight: 700,
-                     fontSize: 12, border: "none", cursor: "pointer" }}>
-            + Add Customer
-          </button>
+         <div style={{ display: "flex", gap: 10 }}>
+            <button
+              onClick={runScheduler}
+              disabled={schedulerRunning}
+              style={{ background: "rgba(76,175,125,0.15)", color: "#4caf7d",
+                       padding: "9px 20px", borderRadius: 8, fontWeight: 700,
+                       fontSize: 12, border: "1px solid rgba(76,175,125,0.3)",
+                       cursor: "pointer" }}>
+              {schedulerRunning ? "Running..." : "⚡ Run Scheduler"}
+            </button>
+            <button onClick={() => setShowAdd(true)}
+              style={{ background: "#c9a84c", color: "#0d0d0f",
+                       padding: "9px 20px", borderRadius: 8, fontWeight: 700,
+                       fontSize: 12, border: "none", cursor: "pointer" }}>
+              + Add Customer
+            </button>
+          </div>
         </div>
 
         {/* STATS */}
