@@ -74,7 +74,8 @@ try {
         senderName: user?.firstName + " " + user?.lastName,
         senderEmail: user?.emailAddresses[0].emailAddress,
         businessName: "Ozhenai",
-        tone: "warm"
+        tone: "warm",
+        userId: user?.id
       })
     });
     const data = await res.json();
