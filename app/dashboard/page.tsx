@@ -18,6 +18,10 @@ export default function Dashboard() {
   const [generatedEmail, setGeneratedEmail] = useState<string>("");
 const [generatingFor, setGeneratingFor] = useState<string | null>(null);
 const [showEmailModal, setShowEmailModal] = useState(false);
+const [analysingFor, setAnalysingFor] = useState<string | null>(null);
+const [signals, setSignals] = useState<any>(null);
+const [showSignalsModal, setShowSignalsModal] = useState(false);
+const [signalsCustomer, setSignalsCustomer] = useState<any>(null);
 
   useEffect(() => {
     if (user) fetchCustomers();
@@ -84,6 +88,24 @@ try {
     setGeneratedEmail("Error generating email. Please try again.");
   }
   setGeneratingFor(null);
+}
+async function analyseCustomer(customer: any) {
+  setAnalysingFor(customer.id);
+  try {
+    const res = await fetch("/api/upsell-signals", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ customerId: customer.id })
+    });
+    const data = await res.json();
+    setSignals(data);
+    setSignalsCustomer(customer);
+    setShowSignalsModal(true);
+    fetchCustomers(); // refresh health scores
+  } catch (e) {
+    alert("Error analysing customer.");
+  }
+  setAnalysingFor(null);
 }
 
   function daysColor(d: number) {
@@ -236,14 +258,24 @@ if (isLoaded && !user) {
                       </span>
                     </td>
                     <td style={{ padding: "12px 16px" }}>
-  <button
-    onClick={() => generateEmail(c)}
-    style={{ background: "rgba(201,168,76,0.15)", color: "#c9a84c",
-             border: "1px solid rgba(201,168,76,0.3)", padding: "5px 12px",
-             borderRadius: 6, fontSize: 11, cursor: "pointer",
-             fontFamily: "monospace" }}>
-    Generate
-  </button>
+  <div style={{ display: "flex", gap: 6 }}>
+    <button
+      onClick={() => generateEmail(c)}
+      style={{ background: "rgba(201,168,76,0.15)", color: "#c9a84c",
+               border: "1px solid rgba(201,168,76,0.3)", padding: "5px 12px",
+               borderRadius: 6, fontSize: 11, cursor: "pointer",
+               fontFamily: "monospace" }}>
+      Generate
+    </button>
+    <button
+      onClick={() => analyseCustomer(c)}
+      style={{ background: "rgba(76,175,125,0.15)", color: "#4caf7d",
+               border: "1px solid rgba(76,175,125,0.3)", padding: "5px 12px",
+               borderRadius: 6, fontSize: 11, cursor: "pointer",
+               fontFamily: "monospace" }}>
+      {analysingFor === c.id ? "..." : "Analyse"}
+    </button>
+  </div>
 </td>
                   </tr>
                 ))}
@@ -356,7 +388,74 @@ if (isLoaded && !user) {
             </div>
           </div>
         </div>
+    )}
+      {showSignalsModal && signals && signalsCustomer && (
+  <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                zIndex: 100 }}>
+    <div style={{ background: "#161619", border: "1px solid rgba(201,168,76,0.3)",
+                  borderRadius: 14, padding: "32px", width: 560, maxHeight: "80vh",
+                  overflowY: "auto" }}>
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 24 }}>
+        <div>
+          <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 4 }}>
+            {signalsCustomer.company} — Intelligence
+          </h2>
+          <span style={{ fontSize: 12, fontFamily: "monospace", color: "#a8a49c" }}>
+            Recommended: {signals.recommended_action?.toUpperCase()}
+          </span>
+        </div>
+        <button onClick={() => setShowSignalsModal(false)}
+          style={{ background: "transparent", border: "none", color: "#a8a49c", fontSize: 20, cursor: "pointer" }}>✕</button>
+      </div>
+      {signals.upsell_signals?.length > 0 && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 12, color: "#4caf7d", fontFamily: "monospace",
+                        textTransform: "uppercase", marginBottom: 12 }}>
+            🚀 Upsell Signals
+          </div>
+          {signals.upsell_signals.map((s: string, i: number) => (
+            <div key={i} style={{ background: "rgba(76,175,125,0.08)",
+                                   border: "1px solid rgba(76,175,125,0.2)",
+                                   borderRadius: 8, padding: "10px 14px",
+                                   marginBottom: 8, fontSize: 13, color: "#e8e4dc" }}>
+              {s}
+            </div>
+          ))}
+        </div>
       )}
+      {signals.risk_signals?.length > 0 && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ fontSize: 12, color: "#e05c5c", fontFamily: "monospace",
+                        textTransform: "uppercase", marginBottom: 12 }}>
+            ⚠️ Risk Signals
+          </div>
+          {signals.risk_signals.map((s: string, i: number) => (
+            <div key={i} style={{ background: "rgba(224,92,92,0.08)",
+                                   border: "1px solid rgba(224,92,92,0.2)",
+                                   borderRadius: 8, padding: "10px 14px",
+                                   marginBottom: 8, fontSize: 13, color: "#e8e4dc" }}>
+              {s}
+            </div>
+          ))}
+        </div>
+      )}
+      <div style={{ background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)",
+                    borderRadius: 8, padding: "14px", marginBottom: 24 }}>
+        <div style={{ fontSize: 12, color: "#c9a84c", fontFamily: "monospace",
+                      textTransform: "uppercase", marginBottom: 6 }}>Action</div>
+        <div style={{ fontSize: 13, color: "#e8e4dc" }}>{signals.action_reason}</div>
+      </div>
+      <button
+        onClick={() => { setShowSignalsModal(false); generateEmail(signalsCustomer); }}
+        style={{ width: "100%", background: "#c9a84c", color: "#0d0d0f",
+                 padding: "12px", borderRadius: 10, fontWeight: 700,
+                 fontSize: 14, border: "none", cursor: "pointer" }}>
+        Generate Email Based on Signals →
+      </button>
+    </div>
+  </div>
+)}
     </div>
   );
 }
