@@ -1,24 +1,30 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 const anthropic = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
+
 export async function POST(req: NextRequest) {
-  const { customer, senderName, senderEmail, businessName, tone } = await req.json();
+  const { customer, senderName, senderEmail, businessName, tone, userId } = await req.json();
 
   if (!customer) {
     return NextResponse.json({ error: "Customer required" }, { status: 400 });
   }
 
   const toneDescMap: { [key: string]: string } = {
-  warm: "warm, personal and genuinely caring — like a trusted friend in business",
-  professional: "professional and direct",
-  founder: "casual founder-to-founder peer",
-  consultative: "consultative and data-driven advisor"
-};
-const toneDesc = toneDescMap[tone || "warm"] || "warm and personal";
+    warm: "warm, personal and genuinely caring — like a trusted friend in business",
+    professional: "professional and direct",
+    founder: "casual founder-to-founder peer",
+    consultative: "consultative and data-driven advisor"
+  };
+  const toneDesc = toneDescMap[tone || "warm"] || "warm and personal";
 
   const system = `You are writing a renewal email on behalf of ${senderName || "a customer success manager"} at ${businessName || "a SaaS company"}.
 
@@ -38,7 +44,8 @@ Rules you must follow without exception:
 Tone: ${toneDesc}
 
 After the email body, on a new line write: Subject: [subject here]`;
-  const user = `Write a personalised renewal email for:
+
+  const userPrompt = `Write a personalised renewal email for:
 
 Name: ${customer.name}
 Company: ${customer.company}
@@ -61,11 +68,31 @@ Write the email. Make it feel hand-written and specific to this person only.`;
       model: "claude-sonnet-4-5",
       max_tokens: 1024,
       system,
-      messages: [{ role: "user", content: user }],
+      messages: [{ role: "user", content: userPrompt }],
     });
 
     const text = message.content[0].type === "text" ? message.content[0].text : "";
-    
+
+    // Extract subject line
+    const subjectMatch = text.match(/Subject:\s*(.+)/i);
+    const subject = subjectMatch ? subjectMatch[1].trim() : `Renewal — ${customer.company}`;
+    const body = text.replace(/Subject:\s*.+/i, "").trim();
+
+    // Save to approval queue
+    if (userId) {
+      await supabase.from("approval_queue").insert({
+        user_id: userId,
+        customer_id: customer.id,
+        customer_name: customer.name,
+        customer_email: customer.email,
+        customer_company: customer.company,
+        email_subject: subject,
+        email_body: body,
+        email_type: "renewal",
+        status: "pending",
+      });
+    }
+
     return NextResponse.json({ email: text });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
