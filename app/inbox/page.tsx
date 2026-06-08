@@ -1,7 +1,7 @@
 'use client';
 import { useUser } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
-import { supabase } from '../../lib/supabase';
+
 
 type QueueItem = {
   id: string;
@@ -26,38 +26,35 @@ export default function InboxPage() {
     if (user) fetchQueue();
   }, [user]);
 
-  async function fetchQueue() {
-    const { data } = await supabase
-      .from('approval_queue')
-      .select('*')
-      .eq('user_id', user!.id)
-      .eq('status', 'pending')
-      .order('created_at', { ascending: false });
-    setQueue(data || []);
-    setLoading(false);
-  }
+ async function fetchQueue() {
+  const res = await fetch('/api/queue');
+  const data = await res.json();
+  setQueue(data.queue || []);
+  setLoading(false);
+}
 
-  async function approveAndSend(item: QueueItem) {
-    setSending(true);
-    await supabase
-      .from('approval_queue')
-      .update({ status: 'approved' })
-      .eq('id', item.id);
-    setQueue(q => q.filter(i => i.id !== item.id));
-    setSelected(null);
-    setSending(false);
-    alert(`Email approved! In production this would send to ${item.customer_email}`);
-  }
+async function approveAndSend(item: QueueItem) {
+  setSending(true);
+  await fetch('/api/queue', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: item.id, status: 'approved' })
+  });
+  setQueue(q => q.filter(i => i.id !== item.id));
+  setSelected(null);
+  setSending(false);
+  alert(`Email approved! In production this would send to ${item.customer_email}`);
+}
 
-  async function reject(item: QueueItem) {
-    await supabase
-      .from('approval_queue')
-      .update({ status: 'rejected' })
-      .eq('id', item.id);
-    setQueue(q => q.filter(i => i.id !== item.id));
-    setSelected(null);
-  }
-
+async function reject(item: QueueItem) {
+  await fetch('/api/queue', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: item.id, status: 'rejected' })
+  });
+  setQueue(q => q.filter(i => i.id !== item.id));
+  setSelected(null);
+}
   return (
     <main style={{ fontFamily: 'Georgia, serif', background: '#0d0d0f', color: '#e8e4dc', minHeight: '100vh' }}>
       <nav style={{ padding: '20px 40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(201,168,76,0.15)' }}>
