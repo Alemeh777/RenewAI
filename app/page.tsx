@@ -31,41 +31,6 @@ export default function Home() {
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
           <a href="/pricing" style={{ color: "#a8a49c", textDecoration: "none", fontSize: 13 }}>Pricing</a>
           <a href="/sign-in" style={{ color: "#c9a84c", padding: "7px 16px", borderRadius: 7, fontSize: 13, border: "1px solid rgba(201,168,76,0.4)", textDecoration: "none" }}>Sign in</a>
-          <a href="/sign-in" style={{ background: "#c9a84c", co
-cat > app/page.tsx << 'ENDOFFILE'
-"use client";
-import { useRouter } from "next/navigation";
-import { useUser } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
-
-export default function Home() {
-  const router = useRouter();
-  const { isSignedIn } = useUser();
-  const [email, setEmail] = useState("");
-  const [customers, setCustomers] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-
-  useEffect(() => {
-    if (isSignedIn) router.push("/dashboard");
-  }, [isSignedIn]);
-
-  async function joinWaitlist() {
-    if (!email) return;
-    const res = await fetch("/api/waitlist", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, customers })
-    });
-    if (res.ok) setSubmitted(true);
-  }
-
-  return (
-    <main style={{ fontFamily: "Georgia, serif", background: "#0d0d0f", color: "#e8e4dc", minHeight: "100vh", overflowX: "hidden" }}>
-      <nav style={{ padding: "20px 48px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(201,168,76,0.1)" }}>
-        <div style={{ fontWeight: 700, fontSize: 17, color: "#c9a84c" }}>Ozhenai</div>
-        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <a href="/pricing" style={{ color: "#a8a49c", textDecoration: "none", fontSize: 13 }}>Pricing</a>
-          <a href="/sign-in" style={{ color: "#c9a84c", padding: "7px 16px", borderRadius: 7, fontSize: 13, border: "1px solid rgba(201,168,76,0.4)", textDecoration: "none" }}>Sign in</a>
           <a href="/sign-in" style={{ background: "#c9a84c", color: "#0d0d0f", padding: "7px 16px", borderRadius: 7, fontSize: 13, fontWeight: 700, textDecoration: "none" }}>Get started</a>
         </div>
       </nav>
@@ -73,7 +38,8 @@ export default function Home() {
       <section style={{ padding: "100px 48px 80px", maxWidth: 860, margin: "0 auto", textAlign: "center" }}>
         <div style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "#c9a84c", fontFamily: "monospace", marginBottom: 24 }}>For customer success teams</div>
         <h1 style={{ fontSize: "clamp(36px, 5.5vw, 64px)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em", margin: "0 auto 28px" }}>
-          Your renewals deserve<br/>
+          Your renewals deserve
+          <br />
           <span style={{ color: "#c9a84c" }}>more than a template.</span>
         </h1>
         <p style={{ fontSize: 18, color: "#a8a49c", lineHeight: 1.75, maxWidth: 580, margin: "0 auto 48px" }}>
@@ -191,7 +157,7 @@ export default function Home() {
                   <option value="1-10">1 to 10</option>
                   <option value="11-50">11 to 50</option>
                   <option value="51-200">51 to 200</option>
-                  <option value="200+">200+</option>
+                  <option value="200+">200 plus</option>
                 </select>
                 <button onClick={joinWaitlist} style={{ background: "#c9a84c", color: "#0d0d0f", padding: "12px", borderRadius: 8, fontWeight: 700, fontSize: 14, border: "none", cursor: "pointer" }}>Join the waitlist</button>
               </div>
