@@ -56,7 +56,11 @@ try {
   const searchData = await searchRes.json();
   if (searchData.news) {
     await supabase.from("customers")
-      .update({ latest_news: searchData.news })
+      .update({ 
+        latest_news: searchData.news,
+        intel: searchData.intel || [],
+        upsell: searchData.upsell_hints || [],
+      })
       .eq("user_id", user!.id)
       .eq("email", form.email);
   }
