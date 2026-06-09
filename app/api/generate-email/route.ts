@@ -63,12 +63,48 @@ Risk signals: ${(customer.risk || []).join(", ") || "None"}
 
 Write the email. Make it feel hand-written and specific to this person only.`;
 
+  // CRM enrichment
+  let crmContext = '';
+  if (userId) {
+    try {
+      const enrichRes = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/crm-enrich`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          customerEmail: customer.email, 
+          customerCompany: customer.company,
+          userId 
+        })
+      });
+      const enrichData = await enrichRes.json();
+      if (enrichData.enrichment?.hubspot) {
+        const h = enrichData.enrichment.hubspot;
+        crmContext += `\nHubSpot data: Job title: ${h.job_title || 'unknown'}, Last contacted: ${h.last_contacted || 'unknown'}, Contact count: ${h.contact_count || 0}`;
+      }
+      if (enrichData.enrichment?.hubspot_company) {
+        const c = enrichData.enrichment.hubspot_company;
+        crmContext += `\nCompany data: Industry: ${c.industry || 'unknown'}, Employees: ${c.employees || 'unknown'}`;
+      }
+      if (enrichData.enrichment?.dynamics) {
+        const d = enrichData.enrichment.dynamics;
+        crmContext += `\nDynamics data: Job title: ${d.job_title || 'unknown'}`;
+      }
+    } catch (err) {
+      console.error('CRM enrichment failed:', err);
+    }
+  }
+
+  // Append CRM context to user prompt if available
+  const finalUserPrompt = crmContext 
+    ? userPrompt + `\n\nCRM Intelligence:${crmContext}` 
+    : userPrompt;
+
   try {
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-5",
       max_tokens: 1024,
       system,
-      messages: [{ role: "user", content: userPrompt }],
+      messages: [{ role: "user", content: finalUserPrompt }],
     });
 
     const text = message.content[0].type === "text" ? message.content[0].text : "";
