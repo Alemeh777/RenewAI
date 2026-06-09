@@ -156,8 +156,9 @@ if (isLoaded && !user) {
           Ozhenai
         </a>
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <a href="/timeline" style={{ fontSize: 13, color: "#a8a49c", textDecoration: "none" }}>Timeline</a>
+         <a href="/timeline" style={{ fontSize: 13, color: "#a8a49c", textDecoration: "none" }}>Timeline</a>
           <a href="/inbox" style={{ fontSize: 13, color: "#a8a49c", textDecoration: "none" }}>Inbox</a>
+          <a href="/settings" style={{ fontSize: 13, color: "#a8a49c", textDecoration: "none" }}>Settings</a>
           <span style={{ fontSize: 12, color: "#6a675f" }}>
             {user.emailAddresses[0].emailAddress}
           </span>
