@@ -1,18 +1,15 @@
 "use client";
-import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export default function Home() {
-  const router = useRouter();
+
   const { isSignedIn } = useUser();
   const [email, setEmail] = useState("");
   const [customers, setCustomers] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  useEffect(() => {
-    if (isSignedIn) router.push("/dashboard");
-  }, [isSignedIn]);
+ 
 
   async function joinWaitlist() {
     if (!email) return;
