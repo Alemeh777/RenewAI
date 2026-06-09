@@ -122,7 +122,7 @@ export default function Home() {
         <p style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6a675f", fontFamily: "monospace", marginBottom: 16 }}>Pricing</p>
         <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 700, marginBottom: 16, letterSpacing: "-0.01em" }}>Simple, honest pricing</h2>
         <p style={{ color: "#a8a49c", fontSize: 15, marginBottom: 56 }}>No annual contracts. No setup fees. Cancel anytime.</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, textAlign: "left" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20, textAlign: "left" }}>
          {[
             { name: "Free", price: "0", features: ["3 email generations", "Up to 10 customers", "Renewal timeline"], highlight: false },
             { name: "Starter", price: "19", features: ["50 email generations", "50 customers", "2 users", "Approval inbox"], highlight: false },
