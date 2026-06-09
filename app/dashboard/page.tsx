@@ -181,7 +181,7 @@ if (isLoaded && !user) {
                       alignItems: "center", marginBottom: 28 }}>
           <div>
             <h1 style={{ fontSize: 22, fontWeight: 700, color: "#e8e4dc" }}>
-              Customer Intelligence
+              {user?.firstName ? `${user.firstName}'s Dashboard` : "Dashboard"}
             </h1>
             <p style={{ fontSize: 12, color: "#6a675f", marginTop: 4,
                         fontFamily: "monospace" }}>

@@ -31,8 +31,8 @@ export default function Home() {
     <>
       <a href="/timeline" style={{ color: "#a8a49c", textDecoration: "none", fontSize: 13 }}>Timeline</a>
       <a href="/inbox" style={{ color: "#a8a49c", textDecoration: "none", fontSize: 13 }}>Inbox</a>
-      <span style={{ fontSize: 12, color: "#6a675f" }}>{user?.firstName || user?.emailAddresses[0].emailAddress}</span>
-<a href="/dashboard" style={{ background: "#c9a84c", color: "#0d0d0f", padding: "7px 16px", borderRadius: 7, fontSize: 13, fontWeight: 700, textDecoration: "none" }}>Dashboard</a>
+      
+<a href="/dashboard" style={{ background: "#c9a84c", color: "#0d0d0f", padding: "7px 16px", borderRadius: 7, fontSize: 13, fontWeight: 700, textDecoration: "none" }}>{user?.firstName ? `${user.firstName}'s Dashboard` : "Dashboard"}</a>
     </>
   ) : (
     <>
