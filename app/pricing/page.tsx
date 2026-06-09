@@ -3,32 +3,45 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@clerk/nextjs';
-
 const plans = [
+  {
+    id: 'free',
+    name: 'Free',
+    price: '€0',
+    description: 'Try it out',
+    features: [
+      '3 email generations/month',
+      'Up to 10 customers',
+      'Renewal timeline',
+      'Approval inbox',
+    ],
+  },
   {
     id: 'starter',
     name: 'Starter',
     price: '€19',
-    description: 'Perfect for small teams',
+    description: 'For individual CSMs',
     features: [
-      '50 AI email generations/month',
-      'Up to 100 customers',
-      'Web intelligence (Tavily)',
-      'Email approval queue',
+      '50 email generations/month',
+      'Up to 50 customers',
+      'Up to 2 users',
+      'Renewal timeline',
+      'Approval inbox',
+      'Upsell signal detector',
     ],
   },
   {
     id: 'growth',
     name: 'Growth',
     price: '€49',
-    description: 'For growing businesses',
+    description: 'For growing CS teams',
     features: [
-      '200 AI email generations/month',
-      'Up to 500 customers',
-      'Web intelligence (Tavily)',
-      'Email approval queue',
+      '200 email generations/month',
+      'Up to 250 customers',
+      'Up to 5 users',
+      'Everything in Starter',
+      'Proactive scheduler',
       'HubSpot integration',
-      'Monthly proactive scheduler',
     ],
     popular: true,
   },
@@ -36,18 +49,18 @@ const plans = [
     id: 'scale',
     name: 'Scale',
     price: '€99',
-    description: 'For large teams',
+    description: 'For larger teams',
     features: [
-      'Unlimited AI email generations',
+      'Unlimited email generations',
       'Unlimited customers',
-      'Web intelligence (Tavily)',
-      'Email approval queue',
-      'HubSpot + Salesforce integration',
-      'Monthly proactive scheduler',
+      'Unlimited users',
+      'Everything in Growth',
+      'Dynamics 365 integration',
       'Priority support',
     ],
   },
 ];
+ 
 
 export default function PricingPage() {
   const router = useRouter();
@@ -96,12 +109,12 @@ export default function PricingPage() {
   return (
     <main className="min-h-screen bg-gray-950 text-white py-20 px-4">
       <div className="max-w-5xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-4">Simple Pricing</h1>
-        <p className="text-center text-gray-400 mb-16">
-          Choose the plan that fits your team
-        </p>
+        <h1 className="text-4xl font-bold text-center mb-4">Pricing</h1>
+<p className="text-center text-gray-400 mb-16">
+  No annual contracts. No setup fees. Cancel anytime.
+</p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {plans.map((plan) => (
             <div
               key={plan.id}
@@ -132,7 +145,7 @@ export default function PricingPage() {
               </ul>
 
               <button
-                onClick={() => handleSubscribe(plan.id)}
+                onClick={() => plan.id === 'free' ? router.push('/sign-in') : handleSubscribe(plan.id)}
                 disabled={loading === plan.id}
                 className={`w-full py-3 rounded-xl font-semibold transition ${
                   plan.popular
