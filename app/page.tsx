@@ -25,11 +25,21 @@ export default function Home() {
     <main style={{ fontFamily: "Georgia, serif", background: "#0d0d0f", color: "#e8e4dc", minHeight: "100vh", overflowX: "hidden" }}>
       <nav style={{ padding: "20px 48px", display: "flex", justifyContent: "space-between", alignItems: "center", borderBottom: "1px solid rgba(201,168,76,0.1)" }}>
         <div style={{ fontWeight: 700, fontSize: 17, color: "#c9a84c" }}>Ozhenai</div>
-        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-          <a href="/pricing" style={{ color: "#a8a49c", textDecoration: "none", fontSize: 13 }}>Pricing</a>
-          <a href="/sign-in" style={{ color: "#c9a84c", padding: "7px 16px", borderRadius: 7, fontSize: 13, border: "1px solid rgba(201,168,76,0.4)", textDecoration: "none" }}>Sign in</a>
-          <a href="/sign-in" style={{ background: "#c9a84c", color: "#0d0d0f", padding: "7px 16px", borderRadius: 7, fontSize: 13, fontWeight: 700, textDecoration: "none" }}>Get started</a>
-        </div>
+       <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+  <a href="/pricing" style={{ color: "#a8a49c", textDecoration: "none", fontSize: 13 }}>Pricing</a>
+  {isSignedIn ? (
+    <>
+      <a href="/timeline" style={{ color: "#a8a49c", textDecoration: "none", fontSize: 13 }}>Timeline</a>
+      <a href="/inbox" style={{ color: "#a8a49c", textDecoration: "none", fontSize: 13 }}>Inbox</a>
+      <a href="/dashboard" style={{ background: "#c9a84c", color: "#0d0d0f", padding: "7px 16px", borderRadius: 7, fontSize: 13, fontWeight: 700, textDecoration: "none" }}>Dashboard</a>
+    </>
+  ) : (
+    <>
+      <a href="/sign-in" style={{ color: "#c9a84c", padding: "7px 16px", borderRadius: 7, fontSize: 13, border: "1px solid rgba(201,168,76,0.4)", textDecoration: "none" }}>Sign in</a>
+      <a href="/sign-in" style={{ background: "#c9a84c", color: "#0d0d0f", padding: "7px 16px", borderRadius: 7, fontSize: 13, fontWeight: 700, textDecoration: "none" }}>Get started</a>
+    </>
+  )}
+</div>
       </nav>
 
       <section style={{ padding: "100px 48px 80px", maxWidth: 860, margin: "0 auto", textAlign: "center" }}>
