@@ -123,11 +123,12 @@ export default function Home() {
         <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 700, marginBottom: 16, letterSpacing: "-0.01em" }}>Simple, honest pricing</h2>
         <p style={{ color: "#a8a49c", fontSize: 15, marginBottom: 56 }}>No annual contracts. No setup fees. Cancel anytime.</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 20, textAlign: "left" }}>
-          {[
+         {[
             { name: "Free", price: "0", features: ["3 email generations", "Up to 10 customers", "Renewal timeline"], highlight: false },
             { name: "Starter", price: "19", features: ["50 email generations", "50 customers", "2 users", "Approval inbox"], highlight: false },
             { name: "Growth", price: "49", features: ["200 email generations", "250 customers", "5 users", "Proactive scheduler"], highlight: true },
             { name: "Scale", price: "99", features: ["Unlimited everything", "Unlimited users", "Dynamics 365", "Priority support"], highlight: false },
+          ].map(plan => (
             <div key={plan.name} style={{ background: plan.highlight ? "#1a1a1e" : "#161619", border: plan.highlight ? "1px solid #c9a84c" : "1px solid rgba(201,168,76,0.1)", borderRadius: 14, padding: "32px 28px" }}>
               {plan.highlight && <div style={{ fontSize: 10, color: "#c9a84c", fontFamily: "monospace", textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 12 }}>Most popular</div>}
               <div style={{ fontSize: 14, color: "#a8a49c", marginBottom: 8 }}>{plan.name}</div>
