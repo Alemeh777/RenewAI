@@ -119,8 +119,8 @@ export default function Home() {
       </section>
 
       <section style={{ padding: "100px 48px", maxWidth: 900, margin: "0 auto", textAlign: "center" }}>
-        <p style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6a675f", fontFamily: "monospace", marginBottom: 16 }}>Pricing</p>
-        <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 700, marginBottom: 56, letterSpacing: "-0.01em" }}>Pricing</h2>
+        <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 700, marginBottom: 12, letterSpacing: "-0.01em" }}>Pricing</h2>
+        <p style={{ color: "#6a675f", fontSize: 13, marginBottom: 48, fontFamily: "monospace" }}>Billed monthly. Cancel anytime.</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 20, textAlign: "left" }}>
          {[
             { name: "Free", price: "0", features: ["3 email generations", "Up to 10 customers", "Renewal timeline"], highlight: false },
