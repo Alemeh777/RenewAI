@@ -102,7 +102,7 @@ export default function Home() {
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
           <p style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6a675f", fontFamily: "monospace", marginBottom: 16, textAlign: "center" }}>What is inside</p>
           <h2 style={{ fontSize: "clamp(24px, 3vw, 38px)", fontWeight: 700, textAlign: "center", marginBottom: 64, letterSpacing: "-0.01em" }}>Everything a great CSM does, done automatically</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 24 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 24 }}>
             {[
               { title: "Renewal timeline", desc: "Every account sorted by days until renewal, ARR at stake, and health score. Nothing slips through." },
               { title: "Upsell signals", desc: "When an account is financially strong and approaching renewal, Ozhenai flags it as an expansion opportunity." },
