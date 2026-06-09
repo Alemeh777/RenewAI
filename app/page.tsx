@@ -44,7 +44,7 @@ export default function Home() {
         </div>
         <h1 style={{ fontSize: "clamp(36px, 5.5vw, 64px)", fontWeight: 700, lineHeight: 1.1, letterSpacing: "-0.02em", marginBottom: 28, margin: "0 auto 28px" }}>
           Your renewals deserve<br/>
-          <span style={{ color: "#c9a84c" }}>more than a template.</span>
+          <span style={{ color: "#c9a84c", }}>more than a template.</span>
         </h1>
         <p style={{ fontSize: 18, color: "#a8a49c", lineHeight: 1.75, maxWidth: 580, margin: "0 auto 48px" }}>
           Ozhenai researches your accounts, spots the right moment to reach out, and writes emails that sound like you — then waits for your approval before anything sends.
@@ -104,4 +104,4 @@ export default function Home() {
             },
           ].map((item, i) => (
             <div key={item.step} style={{ display: "grid", gridTemplateColumns: "80px 1fr", gap: 32, padding: "40px 0", borderBottom: i < 2 ? "1px solid rgba(201,168,76,0.08)" : "none" }}>
-              <div style={{ fontSize: 11, color: "#c9a8
+<div style={{ fontSize: 11, color: "#c9a84c", fontFamily: "monospace", letterSpacing: "0.1em", paddingTop: 6 }}>{item.step}</div>
