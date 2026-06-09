@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export default function Home() {
 
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const [email, setEmail] = useState("");
   const [customers, setCustomers] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -31,7 +31,8 @@ export default function Home() {
     <>
       <a href="/timeline" style={{ color: "#a8a49c", textDecoration: "none", fontSize: 13 }}>Timeline</a>
       <a href="/inbox" style={{ color: "#a8a49c", textDecoration: "none", fontSize: 13 }}>Inbox</a>
-      <a href="/dashboard" style={{ background: "#c9a84c", color: "#0d0d0f", padding: "7px 16px", borderRadius: 7, fontSize: 13, fontWeight: 700, textDecoration: "none" }}>Dashboard</a>
+      <span style={{ fontSize: 12, color: "#6a675f" }}>{user?.firstName || user?.emailAddresses[0].emailAddress}</span>
+<a href="/dashboard" style={{ background: "#c9a84c", color: "#0d0d0f", padding: "7px 16px", borderRadius: 7, fontSize: 13, fontWeight: 700, textDecoration: "none" }}>Dashboard</a>
     </>
   ) : (
     <>
