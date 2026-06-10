@@ -298,7 +298,7 @@ if (isLoaded && !user) {
                 </tr>
               </thead>
               <tbody>
-                {customers.filter(c => hideRenewed ? c.renewal_status !== 'renewed' : true).map((c, i) => (
+                {(hideRenewed ? customers.filter(c => c.renewal_status !== 'renewed') : customers).map((c, i) => (
                   <tr key={c.id}
                     style={{ borderBottom: i < customers.length-1
                       ? "1px solid rgba(201,168,76,0.08)" : "none" }}>
