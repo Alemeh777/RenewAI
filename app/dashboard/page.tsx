@@ -203,7 +203,7 @@ if (isLoaded && !user) {
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <button
-              onClick={() => setHideRenewed(!hideRenewed)}
+              onClick={() => { console.log('toggle', !hideRenewed); setHideRenewed(!hideRenewed); }}
               style={{ background: hideRenewed ? "rgba(76,175,125,0.15)" : "transparent",
                        color: hideRenewed ? "#4caf7d" : "#6a675f",
                        border: `1px solid ${hideRenewed ? "rgba(76,175,125,0.3)" : "rgba(255,255,255,0.1)"}`,
