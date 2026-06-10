@@ -40,6 +40,10 @@ Rules you must follow without exception:
 - One clear ask at the end — a call, a reply, a yes or no. Nothing more.
 - Use the latest news only as one natural sentence if relevant — never as the main topic
 - The email is about their renewal and your relationship — not about features or benefits
+- NEVER mention contract value, ARR, price, or any financial figures directly in the email
+- Use the account's value and size only to calibrate the tone and importance — never quote it
+- Focus on the value the customer gets, not the money they pay — help them see what they would lose, not what they owe
+- Suggest growth or expansion naturally through questions, never as a sales pitch
 
 Tone: ${toneDesc}
 
