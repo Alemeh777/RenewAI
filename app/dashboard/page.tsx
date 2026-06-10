@@ -24,6 +24,7 @@ const [showSignalsModal, setShowSignalsModal] = useState(false);
 const [signalsCustomer, setSignalsCustomer] = useState<any>(null);
 const [schedulerRunning, setSchedulerRunning] = useState(false);
 const [adding, setAdding] = useState(false);
+const [hideRenewed, setHideRenewed] = useState(false);
 
   useEffect(() => {
     if (user) fetchCustomers();
@@ -200,6 +201,17 @@ if (isLoaded && !user) {
               {customers.length} registered companies
             </p>
           </div>
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <button
+              onClick={() => setHideRenewed(!hideRenewed)}
+              style={{ background: hideRenewed ? "rgba(76,175,125,0.15)" : "transparent",
+                       color: hideRenewed ? "#4caf7d" : "#6a675f",
+                       border: `1px solid ${hideRenewed ? "rgba(76,175,125,0.3)" : "rgba(255,255,255,0.1)"}`,
+                       padding: "5px 12px", borderRadius: 6, fontSize: 11,
+                       cursor: "pointer", fontFamily: "monospace" }}>
+              {hideRenewed ? "✓ Hiding renewed" : "Hide renewed"}
+            </button>
+          </div>
          <div style={{ display: "flex", gap: 10 }}>
             <button
               onClick={runScheduler}
@@ -286,7 +298,7 @@ if (isLoaded && !user) {
                 </tr>
               </thead>
               <tbody>
-                {customers.map((c, i) => (
+                {customers.filter(c => hideRenewed ? c.renewal_status !== 'renewed' : true).map((c, i) => (
                   <tr key={c.id}
                     style={{ borderBottom: i < customers.length-1
                       ? "1px solid rgba(201,168,76,0.08)" : "none" }}>
