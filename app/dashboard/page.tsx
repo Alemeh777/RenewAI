@@ -23,6 +23,7 @@ const [signals, setSignals] = useState<any>(null);
 const [showSignalsModal, setShowSignalsModal] = useState(false);
 const [signalsCustomer, setSignalsCustomer] = useState<any>(null);
 const [schedulerRunning, setSchedulerRunning] = useState(false);
+const [adding, setAdding] = useState(false);
 
   useEffect(() => {
     if (user) fetchCustomers();
@@ -40,6 +41,8 @@ const [schedulerRunning, setSchedulerRunning] = useState(false);
 
   async function addCustomer() {
     if (!form.name || !form.company || !form.email) return;
+    if (adding) return;
+    setAdding(true);
     await supabase.from("customers").insert({
       ...form,
       arr: parseFloat(form.arr) || 0,
@@ -69,6 +72,7 @@ try {
       plan: "", arr: "", currency: "€", renew_days: "90" });
     setShowAdd(false);
     fetchCustomers();
+    setAdding(false);
   }
   async function generateEmail(customer: any) {
   setGeneratingFor(customer.id);
@@ -119,6 +123,14 @@ async function updateRenewalStatus(customerId: string, status: string) {
     .update({ renewal_status: status })
     .eq('id', customerId);
  fetchCustomers();
+}
+async function deleteCustomer(customerId: string, customerName: string) {
+  if (!confirm(`Delete ${customerName}? This cannot be undone.`)) return;
+  await supabase
+    .from("customers")
+    .delete()
+    .eq("id", customerId);
+  fetchCustomers();
 }
 
 async function runScheduler() {
@@ -339,6 +351,14 @@ if (isLoaded && !user) {
                borderRadius: 6, fontSize: 11, cursor: "pointer",
                fontFamily: "monospace" }}>
       {analysingFor === c.id ? "..." : "Analyse"}
+    </button>
+    <button
+      onClick={() => deleteCustomer(c.id, c.name)}
+      style={{ background: "rgba(224,92,92,0.1)", color: "#e05c5c",
+               border: "1px solid rgba(224,92,92,0.2)", padding: "5px 12px",
+               borderRadius: 6, fontSize: 11, cursor: "pointer",
+               fontFamily: "monospace" }}>
+      Delete
     </button>
   </div>
 </td>
