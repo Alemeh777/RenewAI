@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   try {
     // Send via Resend
     await resend.emails.send({
-      from: `${senderName || 'Ozhenai'} <onboarding@resend.dev>`,
+      from: `${senderName || 'Ozhenai'} <noreply@ozhenai.com>`,
       to: queueItem.customer_email,
       subject: queueItem.email_subject,
       text: queueItem.email_body,
