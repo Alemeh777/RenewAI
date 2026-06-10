@@ -39,16 +39,38 @@ const [editedBody, setEditedBody] = useState('');
 async function approveAndSend(item: QueueItem) {
   setSending(true);
   const finalBody = editing ? editedBody : item.email_body;
-  await fetch('/api/queue', {
-    method: 'PATCH',
+
+  // Update body if edited
+  if (editing) {
+    await fetch('/api/queue', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id: item.id, status: 'pending', email_body: finalBody })
+    });
+  }
+
+  // Actually send the email
+  const res = await fetch('/api/send-email', {
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: item.id, status: 'approved', email_body: finalBody })
+    body: JSON.stringify({
+      queueId: item.id,
+      senderName: user?.firstName + ' ' + user?.lastName,
+      senderEmail: user?.emailAddresses[0].emailAddress,
+    })
   });
-  setQueue(q => q.filter(i => i.id !== item.id));
-  setSelected(null);
-  setEditing(false);
+
+  const data = await res.json();
+
+  if (data.success) {
+    setQueue(q => q.filter(i => i.id !== item.id));
+    setSelected(null);
+    setEditing(false);
+    alert(`Email sent to ${item.customer_email}!`);
+  } else {
+    alert(`Failed to send: ${data.error}`);
+  }
   setSending(false);
-  alert(`Email approved! In production this would send to ${item.customer_email}`);
 }
 
 async function reject(item: QueueItem) {
