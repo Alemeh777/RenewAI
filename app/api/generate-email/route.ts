@@ -52,6 +52,9 @@ Company: ${customer.company}
 Email: ${customer.email}
 Plan: ${customer.plan || "unknown"} — ${customer.currency || "€"}${customer.arr || 0}/yr
 Renewal in: ${customer.renew_days || 30} days
+Renewal status: ${customer.renewal_status || "not_started"}
+
+Important: If renewal_status is "renewed", write a thank you / check-in email, NOT a renewal reminder. If "in_discussion", write a follow-up email. If "not_started", write a proactive renewal email.
 Health score: ${customer.health || 75}/100
 
 Intelligence:
