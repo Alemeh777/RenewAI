@@ -201,7 +201,7 @@ if (isLoaded && !user) {
               {customers.length} registered companies
             </p>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
             <button
               onClick={() => { console.log('toggle', !hideRenewed); setHideRenewed(!hideRenewed); }}
               style={{ background: hideRenewed ? "rgba(76,175,125,0.15)" : "transparent",
@@ -211,8 +211,6 @@ if (isLoaded && !user) {
                        cursor: "pointer", fontFamily: "monospace" }}>
               {hideRenewed ? "✓ Hiding renewed" : "Hide renewed"}
             </button>
-          </div>
-         <div style={{ display: "flex", gap: 10 }}>
             <button
               onClick={runScheduler}
               disabled={schedulerRunning}
