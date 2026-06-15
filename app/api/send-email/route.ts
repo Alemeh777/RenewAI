@@ -26,13 +26,38 @@ export async function POST(req: Request) {
   if (!queueItem) return NextResponse.json({ error: 'Email not found' }, { status: 404 });
 
   try {
+    // Check if a thread already exists for this customer
+    let { data: thread } = await supabase
+      .from('email_threads')
+      .select('*')
+      .eq('customer_id', queueItem.customer_id)
+      .eq('user_id', userId)
+      .single();
+
+    let replyToAddress: string;
+
+    if (thread) {
+      replyToAddress = thread.reply_to_address;
+    } else {
+      // Create a unique reply address
+      const uniqueId = crypto.randomUUID().split('-')[0];
+      replyToAddress = `reply-${uniqueId}@info.ozhenai.com`;
+
+      await supabase.from('email_threads').insert({
+        user_id: userId,
+        customer_id: queueItem.customer_id,
+        reply_to_address: replyToAddress,
+        thread_history: [],
+      });
+    }
+
     // Send via Resend
     await resend.emails.send({
       from: `${senderName || 'Ozhenai'} <noreply@info.ozhenai.com>`,
       to: queueItem.customer_email,
       subject: queueItem.email_subject,
       text: queueItem.email_body,
-      replyTo: senderEmail,
+      replyTo: replyToAddress,
     });
 
     // Update queue status to approved
