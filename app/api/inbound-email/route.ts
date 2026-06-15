@@ -20,7 +20,16 @@ export async function POST(req: Request) {
     }
 
     console.log('Full inbound event:', JSON.stringify(event, null, 2));
-const { from, to, subject, text } = event.data;
+const { from, to, subject, email_id } = event.data;
+
+// Fetch the full email body using the Receiving API
+const emailRes = await fetch(`https://api.resend.com/emails/receiving/${email_id}`, {
+  headers: {
+    'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+  }
+});
+const emailData = await emailRes.json();
+const text = emailData.text || emailData.html || '';
 
     // Extract the unique reply ID from the "to" address
     // Format: reply-{uniqueId}@info.ozhenai.com
