@@ -19,7 +19,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ received: true });
     }
 
-    const { from, to, subject, text } = event.data;
+    console.log('Full inbound event:', JSON.stringify(event, null, 2));
+const { from, to, subject, text } = event.data;
 
     // Extract the unique reply ID from the "to" address
     // Format: reply-{uniqueId}@info.ozhenai.com
