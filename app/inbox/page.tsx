@@ -164,7 +164,8 @@ async function reject(item: QueueItem) {
   {editing ? 'Cancel edit' : '✏️ Edit'}
 </button>
                 </div>
-                <div style={{ {selected.thread_history?.length > 0 && (
+            
+                {selected.thread_history?.length > 0 && (
                   <div style={{ marginBottom: 24 }}>
                     <div style={{ fontSize: 12, color: '#a8a49c', marginBottom: 12, fontFamily: 'monospace', textTransform: 'uppercase' }}>Customer replied</div>
                     {selected.thread_history.map((msg, i) => (
