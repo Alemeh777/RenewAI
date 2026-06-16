@@ -40,9 +40,9 @@ export async function POST(req: Request) {
       replyToAddress = thread.reply_to_address;
       // Add threading headers if replying to an existing thread
       if (thread.last_message_id) {
-        headers['In-Reply-To'] = thread.last_message_id;
-        headers['References'] = thread.last_message_id;
-      }
+  headers['In-Reply-To'] = thread.last_message_id;
+  headers['References'] = thread.last_message_id;
+}
     } else {
       const uniqueId = crypto.randomUUID().split('-')[0];
       replyToAddress = `reply-${uniqueId}@info.ozhenai.com`;

@@ -66,7 +66,7 @@ const text = emailData.text || emailData.html || '';
       return NextResponse.json({ received: true });
     }
 // Save customer's message ID for threading
-const customerMessageId = event.data?.headers?.['message-id'] || event.data?.email_id;
+const customerMessageId = event.data?.message_id;
 if (customerMessageId && thread) {
   await supabase
     .from('email_threads')
