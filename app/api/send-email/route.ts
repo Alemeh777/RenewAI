@@ -72,6 +72,7 @@ export async function POST(req: Request) {
       replyTo: replyToAddress,
       headers,
     });
+    console.log('Send result:', JSON.stringify(sendResult));
 
     // Save the message ID for threading
     if (sendResult.data?.id && thread) {
