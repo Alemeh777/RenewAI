@@ -4,6 +4,12 @@ import { useEffect, useState } from 'react';
 
 
 
+type ThreadMessage = {
+  from: string;
+  body: string;
+  received_at: string;
+};
+
 type QueueItem = {
   id: string;
   customer_name: string;
@@ -14,6 +20,7 @@ type QueueItem = {
   email_type: string;
   status: string;
   created_at: string;
+  thread_history: ThreadMessage[];
 };
 
 export default function InboxPage() {
@@ -157,6 +164,19 @@ async function reject(item: QueueItem) {
   {editing ? 'Cancel edit' : '✏️ Edit'}
 </button>
                 </div>
+                <div style={{ {selected.thread_history?.length > 0 && (
+                  <div style={{ marginBottom: 24 }}>
+                    <div style={{ fontSize: 12, color: '#a8a49c', marginBottom: 12, fontFamily: 'monospace', textTransform: 'uppercase' }}>Customer replied</div>
+                    {selected.thread_history.map((msg, i) => (
+                      <div key={i} style={{ background: '#0d0d0f', border: '1px solid rgba(201,168,76,0.1)', borderRadius: 10, padding: '14px 16px', marginBottom: 8 }}>
+                        <div style={{ fontSize: 11, color: '#6a675f', marginBottom: 6, fontFamily: 'monospace' }}>
+                          {msg.from} · {new Date(msg.received_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                        </div>
+                        <div style={{ fontSize: 13, color: '#e8e4dc', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{msg.body}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <div style={{ marginBottom: 32 }}>
                   <div style={{ fontSize: 12, color: '#a8a49c', marginBottom: 12, fontFamily: 'monospace', textTransform: 'uppercase' }}>Email</div>
                   {editing ? (
