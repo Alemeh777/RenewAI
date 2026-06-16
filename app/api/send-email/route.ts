@@ -16,7 +16,6 @@ export async function POST(req: Request) {
 
   const { queueId, senderName, senderEmail } = await req.json();
 
-  // Get the email from the queue
   const { data: queueItem } = await supabase
     .from('approval_queue')
     .select('*')
@@ -35,11 +34,16 @@ export async function POST(req: Request) {
       .single();
 
     let replyToAddress: string;
+    let headers: Record<string, string> = {};
 
     if (thread) {
       replyToAddress = thread.reply_to_address;
+      // Add threading headers if replying to an existing thread
+      if (thread.last_message_id) {
+        headers['In-Reply-To'] = thread.last_message_id;
+        headers['References'] = thread.last_message_id;
+      }
     } else {
-      // Create a unique reply address
       const uniqueId = crypto.randomUUID().split('-')[0];
       replyToAddress = `reply-${uniqueId}@info.ozhenai.com`;
 
@@ -49,24 +53,41 @@ export async function POST(req: Request) {
         reply_to_address: replyToAddress,
         thread_history: [],
       });
+
+      const { data: newThread } = await supabase
+        .from('email_threads')
+        .select('*')
+        .eq('customer_id', queueItem.customer_id)
+        .eq('user_id', userId)
+        .single();
+      thread = newThread;
     }
 
     // Send via Resend
-    await resend.emails.send({
+    const sendResult = await resend.emails.send({
       from: `${senderName || 'Ozhenai'} <noreply@info.ozhenai.com>`,
       to: queueItem.customer_email,
       subject: queueItem.email_subject,
       text: queueItem.email_body,
       replyTo: replyToAddress,
+      headers,
     });
 
-    // Update queue status to approved
+    // Save the message ID for threading
+    if (sendResult.data?.id && thread) {
+      await supabase
+        .from('email_threads')
+        .update({ last_message_id: `<${sendResult.data.id}@resend.dev>` })
+        .eq('id', thread.id);
+    }
+
+    // Update queue status
     await supabase
       .from('approval_queue')
       .update({ status: 'approved' })
       .eq('id', queueId);
 
-    // Update customer renewal status to in_discussion
+    // Update customer renewal status
     await supabase
       .from('customers')
       .update({ renewal_status: 'in_discussion' })

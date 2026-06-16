@@ -65,7 +65,14 @@ const text = emailData.text || emailData.html || '';
     if (!customer) {
       return NextResponse.json({ received: true });
     }
-
+// Save customer's message ID for threading
+const customerMessageId = event.data?.headers?.['message-id'] || event.data?.email_id;
+if (customerMessageId && thread) {
+  await supabase
+    .from('email_threads')
+    .update({ last_message_id: customerMessageId })
+    .eq('id', thread.id);
+}
     // Update thread history
     const updatedHistory = [
       ...(thread.thread_history || []),
