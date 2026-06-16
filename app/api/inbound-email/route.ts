@@ -108,7 +108,8 @@ Write a response to their reply.`
 
     const responseText = message.content[0].type === 'text' ? message.content[0].text : '';
     const draftBody = responseText.replace(/Subject:\s*.+/i, '').trim();
-    const draftSubject = `Re: ${subject}`;
+    const cleanSubject = subject.replace(/^(Re:\s*)+/i, '').trim();
+const draftSubject = `Re: ${cleanSubject}`;
 
     // Save draft to approval queue with reply context
     await supabase.from('approval_queue').insert({
