@@ -14,13 +14,14 @@ export async function POST(req: Request) {
  try { const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { customerId } = await req.json();
+ const { customerId, isCompany } = await req.json();
 
-  const { data: customer } = await supabase
-    .from('customers')
-    .select('*')
-    .eq('id', customerId)
-    .single();
+const tableName = isCompany ? 'companies' : 'customers';
+const { data: customer } = await supabase
+  .from(tableName)
+  .select('*')
+  .eq('id', customerId)
+  .single();
 
   if (!customer) return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
 
