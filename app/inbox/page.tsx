@@ -34,7 +34,7 @@ export default function InboxPage() {
   const [sending, setSending] = useState(false);
   const [editing, setEditing] = useState(false);
 const [editedBody, setEditedBody] = useState('');
-
+const [showHistory, setShowHistory] = useState(false);
   useEffect(() => {
     if (user) fetchQueue();
   }, [user]);
@@ -123,7 +123,7 @@ async function reject(item: QueueItem) {
               {queue.map(item => (
                 <div
                   key={item.id}
-                  onClick={() => { setSelected(item); setEditing(false); }}
+                  onClick={() => { setSelected(item); setEditing(false); setShowHistory(false); }}
                   style={{
                     background: selected?.id === item.id ? '#1e1e22' : '#161619',
                     border: selected?.id === item.id ? '1px solid #c9a84c' : '1px solid rgba(201,168,76,0.13)',
@@ -170,7 +170,13 @@ async function reject(item: QueueItem) {
             
                 {selected.thread_history?.length > 0 && (
   <div style={{ marginBottom: 24 }}>
-    <div style={{ fontSize: 12, color: '#a8a49c', marginBottom: 12, fontFamily: 'monospace', textTransform: 'uppercase' }}>Conversation history</div>
+    <div 
+      onClick={() => setShowHistory(!showHistory)}
+      style={{ fontSize: 12, color: '#a8a49c', marginBottom: 12, fontFamily: 'monospace', textTransform: 'uppercase', cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <span>Conversation history ({selected.thread_history.length} messages)</span>
+      <span>{showHistory ? '▲' : '▼'}</span>
+    </div>
+    {showHistory && selected.thread_history.map((msg: any, i: number) => (
     {selected.thread_history.map((msg: any, i: number) => (
       <div key={i} style={{
         background: msg.direction === 'outbound' ? 'rgba(201,168,76,0.06)' : '#0d0d0f',
