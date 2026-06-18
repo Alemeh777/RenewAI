@@ -5,9 +5,12 @@ import { useEffect, useState } from 'react';
 
 
 type ThreadMessage = {
-  from: string;
+  from?: string;
   body: string;
-  received_at: string;
+  received_at?: string;
+  sent_at?: string;
+  direction?: string;
+  subject?: string;
 };
 
 type QueueItem = {
@@ -166,18 +169,23 @@ async function reject(item: QueueItem) {
                 </div>
             
                 {selected.thread_history?.length > 0 && (
-                  <div style={{ marginBottom: 24 }}>
-                    <div style={{ fontSize: 12, color: '#a8a49c', marginBottom: 12, fontFamily: 'monospace', textTransform: 'uppercase' }}>Customer replied</div>
-                    {selected.thread_history.map((msg, i) => (
-                      <div key={i} style={{ background: '#0d0d0f', border: '1px solid rgba(201,168,76,0.1)', borderRadius: 10, padding: '14px 16px', marginBottom: 8 }}>
-                        <div style={{ fontSize: 11, color: '#6a675f', marginBottom: 6, fontFamily: 'monospace' }}>
-                          {msg.from} · {new Date(msg.received_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}
-                        </div>
-                        <div style={{ fontSize: 13, color: '#e8e4dc', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{msg.body}</div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+  <div style={{ marginBottom: 24 }}>
+    <div style={{ fontSize: 12, color: '#a8a49c', marginBottom: 12, fontFamily: 'monospace', textTransform: 'uppercase' }}>Conversation history</div>
+    {selected.thread_history.map((msg: any, i: number) => (
+      <div key={i} style={{
+        background: msg.direction === 'outbound' ? 'rgba(201,168,76,0.06)' : '#0d0d0f',
+        border: msg.direction === 'outbound' ? '1px solid rgba(201,168,76,0.2)' : '1px solid rgba(255,255,255,0.06)',
+        borderRadius: 10, padding: '14px 16px', marginBottom: 8
+      }}>
+        <div style={{ fontSize: 11, color: msg.direction === 'outbound' ? '#c9a84c' : '#6a675f', marginBottom: 6, fontFamily: 'monospace', display: 'flex', justifyContent: 'space-between' }}>
+          <span>{msg.direction === 'outbound' ? '→ You sent' : `← ${msg.from}`}</span>
+          <span>{new Date(msg.sent_at || msg.received_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })}</span>
+        </div>
+        <div style={{ fontSize: 13, color: '#e8e4dc', lineHeight: 1.7, whiteSpace: 'pre-wrap' }}>{msg.body}</div>
+      </div>
+    ))}
+  </div>
+)}
                 <div style={{ marginBottom: 32 }}>
                   <div style={{ fontSize: 12, color: '#a8a49c', marginBottom: 12, fontFamily: 'monospace', textTransform: 'uppercase' }}>Email</div>
                   {editing ? (

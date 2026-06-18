@@ -74,13 +74,27 @@ export async function POST(req: Request) {
     });
     console.log('Send result:', JSON.stringify(sendResult));
 
-    // Save the message ID for threading
-    if (sendResult.data?.id && thread) {
-      await supabase
-        .from('email_threads')
-        .update({ last_message_id: `<${sendResult.data.id}@resend.dev>` })
-        .eq('id', thread.id);
+    // Save outbound email to thread history + update message ID
+if (thread) {
+  const updatedHistory = [
+    ...(thread.thread_history || []),
+    {
+      from: `${senderName} (Ozhenai)`,
+      body: queueItem.email_body,
+      subject: queueItem.email_subject,
+      direction: 'outbound',
+      sent_at: new Date().toISOString()
     }
+  ];
+
+  await supabase
+    .from('email_threads')
+    .update({
+      thread_history: updatedHistory,
+      last_message_id: sendResult.data?.id ? `<${sendResult.data.id}@resend.dev>` : thread.last_message_id
+    })
+    .eq('id', thread.id);
+}
 
     // Update queue status
     await supabase
