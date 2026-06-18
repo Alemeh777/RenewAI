@@ -30,7 +30,14 @@ const emailRes = await fetch(`https://api.resend.com/emails/receiving/${email_id
 });
 const emailData = await emailRes.json();
 const text = emailData.text || emailData.html || '';
-
+// Strip quoted reply text - only keep the actual reply
+const cleanText = text
+  .split('\n')
+  .filter((line: string) => !line.startsWith('>'))
+  .join('\n')
+  .replace(/On .+wrote:/gs, '')
+  .replace(/\n{3,}/g, '\n\n')
+  .trim();
     // Extract the unique reply ID from the "to" address
     // Format: reply-{uniqueId}@info.ozhenai.com
     const toAddress = Array.isArray(to) ? to[0] : to;
@@ -108,7 +115,7 @@ if (customerMessageId && thread) {
     // Update thread history
     const updatedHistory = [
       ...(thread.thread_history || []),
-      { from, body: text, received_at: new Date().toISOString() }
+      { from, body: cleanText, received_at: new Date().toISOString() }
     ];
 
     await supabase
@@ -127,7 +134,7 @@ After the email body, write: Subject: [subject here]`,
       messages: [{
         role: 'user',
         content: `Customer: ${customerName} at ${customerCompany}
-Their reply: "${text}"
+Their reply: "${cleanText}"
 
 Account context:
 Renewal status: ${customer.renewal_status}
