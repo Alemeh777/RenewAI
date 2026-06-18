@@ -31,11 +31,12 @@ const emailRes = await fetch(`https://api.resend.com/emails/receiving/${email_id
 const emailData = await emailRes.json();
 const text = emailData.text || emailData.html || '';
 // Strip quoted reply text - only keep the actual reply
+// Take only the part before the quoted reply
 const cleanText = text
+  .split(/\nOn [\s\S]+?wrote:/)[0]
   .split('\n')
   .filter((line: string) => !line.startsWith('>'))
   .join('\n')
-  .replace(/On [\s\S]+?wrote:/g, '')
   .replace(/\n{3,}/g, '\n\n')
   .trim();
     // Extract the unique reply ID from the "to" address
