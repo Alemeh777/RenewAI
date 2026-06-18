@@ -35,7 +35,7 @@ const cleanText = text
   .split('\n')
   .filter((line: string) => !line.startsWith('>'))
   .join('\n')
-  .replace(/On .+wrote:/gs, '')
+  .replace(/On [\s\S]+?wrote:/g, '')
   .replace(/\n{3,}/g, '\n\n')
   .trim();
     // Extract the unique reply ID from the "to" address

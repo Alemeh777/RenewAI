@@ -10,7 +10,7 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
-
+const supabaseClient = supabase;
 export async function POST(req: NextRequest) {
   const { customer, senderName, senderEmail, businessName, tone, userId } = await req.json();
 
@@ -70,6 +70,24 @@ Risk signals: ${(customer.risk || []).join(", ") || "None"}
 
 Write the email. Make it feel hand-written and specific to this person only.`;
 
+  // Fetch conversation history if exists
+  let conversationContext = '';
+  try {
+    const { data: thread } = await supabaseClient
+      .from('email_threads')
+      .select('thread_history')
+      .eq('customer_id', customer.id)
+      .single();
+    
+    if (thread && thread.thread_history?.length > 0) {
+      const history = thread.thread_history
+        .slice(-5) // last 5 messages
+        .map((m: any) => `${m.from}: ${m.body?.substring(0, 200)}`)
+        .join('\n\n---\n\n');
+      conversationContext = `\n\nPrevious conversation history (most recent first):\n${history}\n\nIMPORTANT: You MUST reference this conversation. Do not start a new topic. Continue naturally from where the conversation left off.`;
+    }
+  } catch (e) {}
+
   // CRM enrichment
   let crmContext = '';
   if (userId) {
@@ -102,9 +120,7 @@ Write the email. Make it feel hand-written and specific to this person only.`;
   }
 
   // Append CRM context to user prompt if available
-  const finalUserPrompt = crmContext 
-    ? userPrompt + `\n\nCRM Intelligence:${crmContext}` 
-    : userPrompt;
+  const finalUserPrompt = userPrompt + conversationContext + (crmContext ? `\n\nCRM Intelligence:${crmContext}` : '');
 
   try {
     const message = await anthropic.messages.create({
