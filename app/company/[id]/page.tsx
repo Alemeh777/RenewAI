@@ -141,6 +141,9 @@ export default function CompanyPage() {
         body: JSON.stringify({
           customer: {
             id: contract.id,
+            customer_company: company?.name,
+            customer_name: contact.name,
+            customer_email: contact.email,
             name: contact.name,
             company: company?.name,
             email: contact.email,

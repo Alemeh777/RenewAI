@@ -134,8 +134,8 @@ Write the email. Make it feel hand-written and specific to this person only.`;
         email_type: "renewal",
         status: "pending",
       });
-      if (queueError) console.error("Queue insert error:", queueError);
-else console.log("Saved to queue successfully");
+      if (queueError) console.error("Queue insert error:", JSON.stringify(queueError));
+      else console.log("Saved to queue successfully for:", customer.name);
     }
 
     return NextResponse.json({ email: text });
