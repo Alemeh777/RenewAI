@@ -54,6 +54,7 @@ const text = emailData.text || emailData.html || '';
       console.log('No thread found for:', toAddress);
       return NextResponse.json({ received: true });
     }
+    console.log('Thread found:', thread.id, 'customer_id:', thread.customer_id);
 
     // Try customers table first, then contracts
 let customer: any = null;
@@ -86,9 +87,11 @@ if (oldCustomer) {
     const company = contract.companies;
     customerEmail = contact?.email || '';
     customerName = contact?.name || '';
-    customerCompany = company?.name || '';
+  customerCompany = company?.name || '';
   }
 }
+
+console.log('Customer lookup result - name:', customerName, 'email:', customerEmail, 'company:', customerCompany);
 
 if (!customer) {
   console.log('No customer or contract found for thread:', thread.customer_id);
