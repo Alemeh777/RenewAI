@@ -167,7 +167,6 @@ async function reject(item: QueueItem) {
   {editing ? 'Cancel edit' : '✏️ Edit'}
 </button>
                 </div>
-            
                 {selected.thread_history?.length > 0 && (
   <div style={{ marginBottom: 24 }}>
     <div 
@@ -177,7 +176,6 @@ async function reject(item: QueueItem) {
       <span>{showHistory ? '▲' : '▼'}</span>
     </div>
     {showHistory && selected.thread_history.map((msg: any, i: number) => (
-    {selected.thread_history.map((msg: any, i: number) => (
       <div key={i} style={{
         background: msg.direction === 'outbound' ? 'rgba(201,168,76,0.06)' : '#0d0d0f',
         border: msg.direction === 'outbound' ? '1px solid rgba(201,168,76,0.2)' : '1px solid rgba(255,255,255,0.06)',
