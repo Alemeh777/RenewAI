@@ -55,16 +55,45 @@ const text = emailData.text || emailData.html || '';
       return NextResponse.json({ received: true });
     }
 
-    // Get customer details
-    const { data: customer } = await supabase
-      .from('customers')
-      .select('*')
-      .eq('id', thread.customer_id)
-      .single();
+    // Try customers table first, then contracts
+let customer: any = null;
+let customerEmail = '';
+let customerName = '';
+let customerCompany = '';
 
-    if (!customer) {
-      return NextResponse.json({ received: true });
-    }
+const { data: oldCustomer } = await supabase
+  .from('customers')
+  .select('*')
+  .eq('id', thread.customer_id)
+  .single();
+
+if (oldCustomer) {
+  customer = oldCustomer;
+  customerEmail = oldCustomer.email;
+  customerName = oldCustomer.name;
+  customerCompany = oldCustomer.company;
+} else {
+  // Try new contracts table
+  const { data: contract } = await supabase
+    .from('contracts')
+    .select('*, contacts(*), companies(*)')
+    .eq('id', thread.customer_id)
+    .single();
+
+  if (contract) {
+    customer = contract;
+    const contact = contract.contacts;
+    const company = contract.companies;
+    customerEmail = contact?.email || '';
+    customerName = contact?.name || '';
+    customerCompany = company?.name || '';
+  }
+}
+
+if (!customer) {
+  console.log('No customer or contract found for thread:', thread.customer_id);
+  return NextResponse.json({ received: true });
+}
 // Save customer's message ID for threading
 const customerMessageId = event.data?.message_id;
 if (customerMessageId && thread) {
@@ -94,7 +123,7 @@ No corporate language. Short paragraphs. Sound like a real person.
 After the email body, write: Subject: [subject here]`,
       messages: [{
         role: 'user',
-        content: `Customer: ${customer.name} at ${customer.company}
+        content: `Customer: ${customerName} at ${customerCompany}
 Their reply: "${text}"
 
 Account context:
@@ -113,16 +142,16 @@ const draftSubject = `Re: ${cleanSubject}`;
 
     // Save draft to approval queue with reply context
     await supabase.from('approval_queue').insert({
-      user_id: thread.user_id,
-      customer_id: customer.id,
-      customer_name: customer.name,
-      customer_email: customer.email,
-      customer_company: customer.company,
-      email_subject: draftSubject,
-      email_body: draftBody,
-      email_type: 'reply',
-      status: 'pending',
-    });
+  user_id: thread.user_id,
+  customer_id: thread.customer_id,
+  customer_name: customerName,
+  customer_email: customerEmail,
+  customer_company: customerCompany,
+  email_subject: draftSubject,
+  email_body: draftBody,
+  email_type: 'reply',
+  status: 'pending',
+});
 
     return NextResponse.json({ received: true, processed: true });
   } catch (err: any) {
