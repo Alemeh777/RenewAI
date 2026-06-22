@@ -125,7 +125,7 @@ export default function Home() {
          {[
             { name: "Free", price: "0", features: ["5 customers", "1 user", "Unlimited email generations", "Renewal timeline"], highlight: false },
 { name: "Starter", price: "19", features: ["50 customers", "2 users", "Unlimited email generations", "Approval inbox"], highlight: false },
-{ name: "Growth", price: "49", features: ["250 customers", "5 users", "Unlimited email generations", "Proactive scheduler"], highlight: true },
+{ name: "Growth", price: "49", features: ["100 customers", "5 users", "Unlimited email generations", "Proactive scheduler"], highlight: true },
 { name: "Scale", price: "99", features: ["Unlimited customers", "Unlimited users", "Unlimited email generations", "Priority support"], highlight: false },
           ].map(plan => (
             <div key={plan.name} style={{ background: plan.highlight ? "#1a1a1e" : "#161619", border: plan.highlight ? "1px solid #c9a84c" : "1px solid rgba(201,168,76,0.1)", borderRadius: 14, padding: "32px 28px" }}>

@@ -37,7 +37,7 @@ const plans = [
     price: '€49',
     description: 'For growing CS teams',
     features: [
-      'Up to 250 customers',
+      'Up to 100 customers',
       'Up to 5 users',
       'Unlimited email generations',
       'Everything in Starter',
