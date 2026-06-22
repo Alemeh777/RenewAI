@@ -43,6 +43,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [showAdd, setShowAdd] = useState(false);
   const [adding, setAdding] = useState(false);
+  const [schedulerRunning, setSchedulerRunning] = useState(false);
   const [form, setForm] = useState({ name: "", domain: "", industry: "", size: "" });
 
   useEffect(() => {
@@ -106,6 +107,22 @@ export default function Dashboard() {
     });
     fetchCompanies();
   }
+  async function runScheduler() {
+  setSchedulerRunning(true);
+  try {
+    const res = await fetch('/api/scheduler', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: user?.id, manual: true })
+    });
+    const data = await res.json();
+    alert(data.message);
+    fetchCompanies();
+  } catch (e) {
+    alert('Scheduler error. Please try again.');
+  }
+  setSchedulerRunning(false);
+}
 
   function daysColor(d: number) {
     return d <= 14 ? "#e05c5c" : d <= 40 ? "#c9a84c" : "#4caf7d";
@@ -144,10 +161,18 @@ export default function Dashboard() {
               {companies.length} companies
             </p>
           </div>
-          <button onClick={() => setShowAdd(true)}
-            style={{ background: "#c9a84c", color: "#0d0d0f", padding: "9px 20px", borderRadius: 8, fontWeight: 700, fontSize: 12, border: "none", cursor: "pointer" }}>
-            + Add Company
-          </button>
+          <div style={{ display: "flex", gap: 10 }}>
+            <button
+              onClick={runScheduler}
+              disabled={schedulerRunning}
+              style={{ background: "rgba(76,175,125,0.15)", color: "#4caf7d", padding: "9px 20px", borderRadius: 8, fontWeight: 700, fontSize: 12, border: "1px solid rgba(76,175,125,0.3)", cursor: "pointer" }}>
+              {schedulerRunning ? "Running..." : "⚡ Run Scheduler"}
+            </button>
+            <button onClick={() => setShowAdd(true)}
+              style={{ background: "#c9a84c", color: "#0d0d0f", padding: "9px 20px", borderRadius: 8, fontWeight: 700, fontSize: 12, border: "none", cursor: "pointer" }}>
+              + Add Company
+            </button>
+          </div>
         </div>
 
         {/* STATS */}
