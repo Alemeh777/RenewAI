@@ -84,6 +84,9 @@ export async function POST(req: Request) {
       headers,
     });
     console.log('Send result:', JSON.stringify(sendResult));
+    if (sendResult.error) {
+      return NextResponse.json({ error: sendResult.error.message }, { status: 400 });
+    }
 
     // Save outbound email to thread history + update message ID
 if (thread) {
