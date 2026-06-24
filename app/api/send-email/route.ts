@@ -80,7 +80,7 @@ export async function POST(req: Request) {
       to: queueItem.customer_email,
       subject: queueItem.email_subject,
       text: queueItem.email_body,
-      replyTo: replyToAddress,
+      replyTo: `${fromName} <${replyToAddress}>`,
       headers,
     });
     console.log('Send result:', JSON.stringify(sendResult));
