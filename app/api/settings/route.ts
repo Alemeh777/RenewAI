@@ -24,13 +24,15 @@ export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { hubspot_key, dynamics_url, dynamics_key } = await req.json();
+  const { hubspot_key, dynamics_url, dynamics_key, sending_name, sending_domain } = await req.json();
 
   await supabase.from('user_settings').upsert({
     user_id: userId,
     hubspot_key,
     dynamics_url,
     dynamics_key,
+    sending_name,
+    sending_domain,
     updated_at: new Date().toISOString(),
   });
 

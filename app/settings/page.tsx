@@ -7,6 +7,8 @@ export default function SettingsPage() {
   const [hubspotKey, setHubspotKey] = useState('');
   const [dynamicsUrl, setDynamicsUrl] = useState('');
   const [dynamicsKey, setDynamicsKey] = useState('');
+  const [sendingName, setSendingName] = useState('');
+  const [sendingDomain, setSendingDomain] = useState('');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -21,6 +23,8 @@ export default function SettingsPage() {
       setHubspotKey(data.settings.hubspot_key || '');
       setDynamicsUrl(data.settings.dynamics_url || '');
       setDynamicsKey(data.settings.dynamics_key || '');
+      setSendingName(data.settings.sending_name || '');
+      setSendingDomain(data.settings.sending_domain || '');
     }
   }
 
@@ -33,6 +37,8 @@ export default function SettingsPage() {
         hubspot_key: hubspotKey,
         dynamics_url: dynamicsUrl,
         dynamics_key: dynamicsKey,
+        sending_name: sendingName,
+        sending_domain: sendingDomain,
       })
     });
     setSaving(false);
@@ -115,7 +121,42 @@ export default function SettingsPage() {
             </div>
           </div>
         </div>
-
+{/* Sending Identity */}
+        <div style={{ background: '#161619', border: '1px solid rgba(201,168,76,0.13)', borderRadius: 16, padding: '28px', marginBottom: 40 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+            <div style={{ fontSize: 24 }}>✉️</div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 16 }}>Sending Identity</div>
+              <div style={{ fontSize: 12, color: '#a8a49c' }}>Emails will appear from your domain instead of ozhenai.com</div>
+            </div>
+            {sendingDomain && <span style={{ marginLeft: 'auto', fontSize: 11, background: 'rgba(76,175,125,0.15)', color: '#4caf7d', padding: '3px 10px', borderRadius: 20 }}>Active ✓</span>}
+          </div>
+          <div style={{ marginTop: 16, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div>
+              <label style={{ fontSize: 12, color: '#a8a49c', display: 'block', marginBottom: 6 }}>Your Name</label>
+              <input
+                type="text"
+                value={sendingName}
+                onChange={e => setSendingName(e.target.value)}
+                placeholder="Sarah Chen"
+                style={{ width: '100%', padding: '10px 14px', background: '#0d0d0f', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, color: '#e8e4dc', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+              />
+            </div>
+            <div>
+              <label style={{ fontSize: 12, color: '#a8a49c', display: 'block', marginBottom: 6 }}>Sending Domain</label>
+              <input
+                type="text"
+                value={sendingDomain}
+                onChange={e => setSendingDomain(e.target.value)}
+                placeholder="yourcompany.com"
+                style={{ width: '100%', padding: '10px 14px', background: '#0d0d0f', border: '1px solid rgba(201,168,76,0.2)', borderRadius: 8, color: '#e8e4dc', fontSize: 13, outline: 'none', boxSizing: 'border-box' }}
+              />
+              <div style={{ fontSize: 11, color: '#6a675f', marginTop: 6 }}>
+                The domain must be verified in Resend first. Emails will send as noreply@yourdomain.com — replies still route back to Ozhenai automatically.
+              </div>
+            </div>
+          </div>
+        </div>
         <button
           onClick={saveSettings}
           disabled={saving}

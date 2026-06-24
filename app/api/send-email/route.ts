@@ -23,6 +23,17 @@ export async function POST(req: Request) {
     .single();
 
   if (!queueItem) return NextResponse.json({ error: 'Email not found' }, { status: 404 });
+  // Fetch CSM's custom sending domain if set
+  const { data: userSettings } = await supabase
+    .from('user_settings')
+    .select('sending_name, sending_domain')
+    .eq('user_id', userId)
+    .single();
+
+  const fromName = userSettings?.sending_name || senderName || 'Ozhenai';
+  const fromAddress = userSettings?.sending_domain
+    ? `${fromName} <noreply@${userSettings.sending_domain}>`
+    : `${fromName} <noreply@info.ozhenai.com>`;
 
   try {
     // Check if a thread already exists for this customer
@@ -65,7 +76,7 @@ export async function POST(req: Request) {
 
     // Send via Resend
     const sendResult = await resend.emails.send({
-      from: `${senderName || 'Ozhenai'} <noreply@info.ozhenai.com>`,
+      from: fromAddress,
       to: queueItem.customer_email,
       subject: queueItem.email_subject,
       text: queueItem.email_body,
