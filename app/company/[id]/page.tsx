@@ -20,6 +20,18 @@ type Contract = {
   contact_id: string;
 };
 
+type Meeting = {
+  id: string;
+  title: string;
+  meeting_date: string;
+  summary: string;
+  commitments: { text: string; owner: string }[];
+  risks: string[];
+  upsell_signals: string[];
+  renewal_facts: string[];
+  next_step: string;
+};
+
 type Company = {
   id: string;
   name: string;
@@ -55,9 +67,19 @@ export default function CompanyPage() {
   const [signals, setSignals] = useState<any>(null);
   const [showSignalsModal, setShowSignalsModal] = useState(false);
 
+  // Meeting state
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [showAddMeeting, setShowAddMeeting] = useState(false);
+  const [meetingForm, setMeetingForm] = useState({ title: "", transcript: "" });
+  const [extracting, setExtracting] = useState(false);
+  const [expandedMeeting, setExpandedMeeting] = useState<string | null>(null);
+
   useEffect(() => {
     if (isLoaded && !user) router.push("/sign-in");
-    if (user && id) fetchCompany();
+    if (user && id) {
+      fetchCompany();
+      fetchMeetings();
+    }
   }, [user, isLoaded, id]);
 
   async function fetchCompany() {
@@ -65,6 +87,14 @@ export default function CompanyPage() {
     const data = await res.json();
     setCompany(data.company);
     setLoading(false);
+  }
+
+  async function fetchMeetings() {
+    const res = await fetch(`/api/meetings?companyId=${id}`);
+    if (res.ok) {
+      const data = await res.json();
+      setMeetings(data.meetings || []);
+    }
   }
 
   async function addContact() {
@@ -190,8 +220,41 @@ export default function CompanyPage() {
     setAnalysingFor(null);
   }
 
+  async function extractMeeting() {
+    if (!meetingForm.transcript.trim()) return;
+    setExtracting(true);
+    try {
+      const res = await fetch("/api/meetings/extract", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          companyId: id,
+          userId: user?.id,
+          transcript: meetingForm.transcript,
+          title: meetingForm.title || "Meeting"
+        })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        setMeetingForm({ title: "", transcript: "" });
+        setShowAddMeeting(false);
+        await fetchMeetings();
+        await fetchCompany(); // refresh signals since company intel was updated
+      } else {
+        alert(data.error || "Could not extract meeting. Please try again.");
+      }
+    } catch (e) {
+      alert("Error extracting meeting. Please try again.");
+    }
+    setExtracting(false);
+  }
+
   function daysColor(d: number) {
     return d <= 14 ? "#e05c5c" : d <= 40 ? "#c9a84c" : "#4caf7d";
+  }
+
+  function formatDate(iso: string) {
+    return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   }
 
   if (!isLoaded || !user) return null;
@@ -308,12 +371,12 @@ export default function CompanyPage() {
                     </div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
                       <select
-                        value={contract.renewal_status || 'not_started'}
+                        value={contract.renewal_status || "not_started"}
                         onChange={e => updateRenewalStatus(contract.id, e.target.value)}
                         style={{
-                          background: contract.renewal_status === 'renewed' ? 'rgba(76,175,125,0.15)' : contract.renewal_status === 'in_discussion' ? 'rgba(201,168,76,0.15)' : 'rgba(224,92,92,0.1)',
-                          color: contract.renewal_status === 'renewed' ? '#4caf7d' : contract.renewal_status === 'in_discussion' ? '#c9a84c' : '#e05c5c',
-                          border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, padding: '4px 8px', fontSize: 11, cursor: 'pointer', fontFamily: 'monospace'
+                          background: contract.renewal_status === "renewed" ? "rgba(76,175,125,0.15)" : contract.renewal_status === "in_discussion" ? "rgba(201,168,76,0.15)" : "rgba(224,92,92,0.1)",
+                          color: contract.renewal_status === "renewed" ? "#4caf7d" : contract.renewal_status === "in_discussion" ? "#c9a84c" : "#e05c5c",
+                          border: "1px solid rgba(255,255,255,0.1)", borderRadius: 6, padding: "4px 8px", fontSize: 11, cursor: "pointer", fontFamily: "monospace"
                         }}>
                         <option value="not_started">not started</option>
                         <option value="in_discussion">in discussion</option>
@@ -356,6 +419,125 @@ export default function CompanyPage() {
             )}
           </div>
         )}
+
+        {/* MEETINGS */}
+        <div style={{ marginTop: 32 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <h2 style={{ fontSize: 16, fontWeight: 700 }}>Meetings</h2>
+            <button onClick={() => setShowAddMeeting(true)}
+              style={{ background: "rgba(201,168,76,0.15)", color: "#c9a84c", border: "1px solid rgba(201,168,76,0.3)", padding: "5px 14px", borderRadius: 6, fontSize: 11, cursor: "pointer", fontFamily: "monospace" }}>
+              + Add Meeting
+            </button>
+          </div>
+
+          {meetings.length === 0 ? (
+            <div style={{ background: "#161619", border: "1px solid rgba(201,168,76,0.08)", borderRadius: 12, padding: "32px", textAlign: "center" }}>
+              <div style={{ fontSize: 13, color: "#6a675f", marginBottom: 8 }}>No meetings yet</div>
+              <div style={{ fontSize: 12, color: "#4a4740" }}>Paste a transcript or call notes and the AI will extract the intelligence for you.</div>
+            </div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {meetings.map(meeting => (
+                <div key={meeting.id} style={{ background: "#161619", border: "1px solid rgba(201,168,76,0.1)", borderRadius: 12, overflow: "hidden" }}>
+                  {/* Meeting header — always visible */}
+                  <div
+                    onClick={() => setExpandedMeeting(expandedMeeting === meeting.id ? null : meeting.id)}
+                    style={{ padding: "16px 20px", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 3 }}>{meeting.title}</div>
+                      <div style={{ fontSize: 12, color: "#6a675f", fontFamily: "monospace" }}>{formatDate(meeting.meeting_date)}</div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      {meeting.next_step && (
+                        <span style={{ fontSize: 11, background: "rgba(201,168,76,0.12)", color: "#c9a84c", padding: "3px 10px", borderRadius: 20, fontFamily: "monospace" }}>next step →</span>
+                      )}
+                      {meeting.risks?.length > 0 && (
+                        <span style={{ fontSize: 11, background: "rgba(224,92,92,0.1)", color: "#e05c5c", padding: "3px 10px", borderRadius: 20, fontFamily: "monospace" }}>{meeting.risks.length} risk{meeting.risks.length > 1 ? "s" : ""}</span>
+                      )}
+                      {meeting.upsell_signals?.length > 0 && (
+                        <span style={{ fontSize: 11, background: "rgba(76,175,125,0.1)", color: "#4caf7d", padding: "3px 10px", borderRadius: 20, fontFamily: "monospace" }}>{meeting.upsell_signals.length} upsell</span>
+                      )}
+                      <span style={{ color: "#6a675f", fontSize: 12 }}>{expandedMeeting === meeting.id ? "▲" : "▼"}</span>
+                    </div>
+                  </div>
+
+                  {/* Expanded detail */}
+                  {expandedMeeting === meeting.id && (
+                    <div style={{ borderTop: "1px solid rgba(201,168,76,0.08)", padding: "20px", display: "flex", flexDirection: "column", gap: 16 }}>
+
+                      {/* Summary */}
+                      {meeting.summary && (
+                        <div>
+                          <div style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 6 }}>Summary</div>
+                          <div style={{ fontSize: 13, color: "#a8a49c", lineHeight: 1.7 }}>{meeting.summary}</div>
+                        </div>
+                      )}
+
+                      {/* Next step */}
+                      {meeting.next_step && (
+                        <div style={{ background: "rgba(201,168,76,0.07)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 8, padding: "14px 16px" }}>
+                          <div style={{ fontSize: 11, color: "#c9a84c", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 6 }}>→ Next Step</div>
+                          <div style={{ fontSize: 13, color: "#e8e4dc", lineHeight: 1.6 }}>{meeting.next_step}</div>
+                        </div>
+                      )}
+
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                        {/* Commitments */}
+                        {meeting.commitments?.length > 0 && (
+                          <div>
+                            <div style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 8 }}>Commitments</div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                              {meeting.commitments.map((c, i) => (
+                                <div key={i} style={{ background: "rgba(255,255,255,0.03)", borderRadius: 6, padding: "8px 12px" }}>
+                                  <div style={{ fontSize: 13, color: "#e8e4dc", marginBottom: 2 }}>{c.text}</div>
+                                  {c.owner && <div style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace" }}>Owner: {c.owner}</div>}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Renewal facts */}
+                        {meeting.renewal_facts?.length > 0 && (
+                          <div>
+                            <div style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 8 }}>Renewal Facts</div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                              {meeting.renewal_facts.map((f, i) => (
+                                <div key={i} style={{ fontSize: 13, color: "#a8a49c" }}>— {f}</div>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                        {/* Risks */}
+                        {meeting.risks?.length > 0 && (
+                          <div style={{ background: "rgba(224,92,92,0.05)", border: "1px solid rgba(224,92,92,0.15)", borderRadius: 8, padding: "14px" }}>
+                            <div style={{ fontSize: 11, color: "#e05c5c", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 8 }}>⚠️ Risks</div>
+                            {meeting.risks.map((r, i) => (
+                              <div key={i} style={{ fontSize: 13, color: "#e8e4dc", marginBottom: 4 }}>— {r}</div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Upsell signals */}
+                        {meeting.upsell_signals?.length > 0 && (
+                          <div style={{ background: "rgba(76,175,125,0.05)", border: "1px solid rgba(76,175,125,0.15)", borderRadius: 8, padding: "14px" }}>
+                            <div style={{ fontSize: 11, color: "#4caf7d", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 8 }}>🚀 Upsell</div>
+                            {meeting.upsell_signals.map((s, i) => (
+                              <div key={i} style={{ fontSize: 13, color: "#e8e4dc", marginBottom: 4 }}>— {s}</div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ADD CONTACT MODAL */}
@@ -483,6 +665,58 @@ export default function CompanyPage() {
               style={{ width: "100%", background: "#c9a84c", color: "#0d0d0f", padding: "12px", borderRadius: 10, fontWeight: 700, fontSize: 14, border: "none", cursor: "pointer" }}>
               Close
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* ADD MEETING MODAL */}
+      {showAddMeeting && (
+        <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.9)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
+          <div style={{ background: "#161619", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 14, padding: "32px", width: 600, maxHeight: "85vh", overflowY: "auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+              <h2 style={{ fontSize: 18, fontWeight: 700 }}>Add Meeting</h2>
+              <button onClick={() => setShowAddMeeting(false)} style={{ background: "transparent", border: "none", color: "#a8a49c", fontSize: 20, cursor: "pointer" }}>✕</button>
+            </div>
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
+              <div>
+                <label style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", textTransform: "uppercase", display: "block", marginBottom: 6 }}>Meeting Title</label>
+                <input
+                  value={meetingForm.title}
+                  onChange={e => setMeetingForm({ ...meetingForm, title: e.target.value })}
+                  placeholder="e.g. Q3 Renewal Call"
+                  style={{ width: "100%", padding: "9px 12px", background: "#0d0d0f", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 7, color: "#e8e4dc", fontSize: 13, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+              <div>
+                <label style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", textTransform: "uppercase", display: "block", marginBottom: 6 }}>
+                  Transcript or Notes *
+                </label>
+                <div style={{ fontSize: 12, color: "#4a4740", marginBottom: 8 }}>
+                  Paste a transcript from Fireflies, Otter, Teams, or just type your own notes.
+                </div>
+                <textarea
+                  value={meetingForm.transcript}
+                  onChange={e => setMeetingForm({ ...meetingForm, transcript: e.target.value })}
+                  placeholder="Paste the meeting transcript or your notes here..."
+                  rows={12}
+                  style={{ width: "100%", padding: "12px", background: "#0d0d0f", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 7, color: "#e8e4dc", fontSize: 13, outline: "none", resize: "vertical", fontFamily: "Georgia, serif", lineHeight: 1.6, boxSizing: "border-box" }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+              <button onClick={() => setShowAddMeeting(false)}
+                style={{ background: "transparent", color: "#6a675f", border: "1px solid rgba(201,168,76,0.2)", padding: "10px 20px", borderRadius: 7, cursor: "pointer", fontSize: 13 }}>
+                Cancel
+              </button>
+              <button
+                onClick={extractMeeting}
+                disabled={extracting || !meetingForm.transcript.trim()}
+                style={{ background: extracting ? "rgba(201,168,76,0.4)" : "#c9a84c", color: "#0d0d0f", border: "none", padding: "10px 24px", borderRadius: 7, fontWeight: 700, cursor: extracting ? "default" : "pointer", fontSize: 13 }}>
+                {extracting ? "Extracting intelligence..." : "⚡ Extract & Save"}
+              </button>
+            </div>
           </div>
         </div>
       )}
