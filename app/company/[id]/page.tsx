@@ -192,6 +192,7 @@ export default function CompanyPage() {
           senderEmail: user?.emailAddresses[0].emailAddress,
           businessName: "Ozhenai",
           tone: "warm",
+          companyId: id,
           userId: user?.id
         })
       });

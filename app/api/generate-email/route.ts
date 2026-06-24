@@ -69,7 +69,30 @@ Upsell opportunities: ${(customer.upsell || []).join(", ") || "None"}
 Risk signals: ${(customer.risk || []).join(", ") || "None"}
 
 Write the email. Make it feel hand-written and specific to this person only.`;
+// Fetch most recent meeting intelligence for this company
+  let meetingContext = '';
+  if (customer.companyId) {
+    try {
+      const { data: recentMeeting } = await supabaseClient
+        .from('meetings')
+        .select('summary, next_step, commitments, risks, upsell_signals, renewal_facts, title, meeting_date')
+        .eq('company_id', customer.companyId)
+        .order('meeting_date', { ascending: false })
+        .limit(1)
+        .single();
 
+      if (recentMeeting) {
+        const commitmentLines = (recentMeeting.commitments || [])
+          .map((c: any) => `  - ${c.text} (Owner: ${c.owner})`)
+          .join('\n');
+        meetingContext = `\n\nMost recent meeting: "${recentMeeting.title}" on ${new Date(recentMeeting.meeting_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+Summary: ${recentMeeting.summary}
+${recentMeeting.next_step ? `Agreed next step: ${recentMeeting.next_step}` : ''}
+${commitmentLines ? `Commitments made:\n${commitmentLines}` : ''}
+IMPORTANT: If relevant, reference what was actually discussed in this meeting. Do not invent new topics.`;
+      }
+    } catch (e) {}
+  }
   // Fetch conversation history if exists
   let conversationContext = '';
   try {
@@ -120,7 +143,7 @@ Write the email. Make it feel hand-written and specific to this person only.`;
   }
 
   // Append CRM context to user prompt if available
-  const finalUserPrompt = userPrompt + conversationContext + (crmContext ? `\n\nCRM Intelligence:${crmContext}` : '');
+  const finalUserPrompt = userPrompt + meetingContext + conversationContext + (crmContext ? `\n\nCRM Intelligence:${crmContext}` : '');
 
   try {
     const message = await anthropic.messages.create({
