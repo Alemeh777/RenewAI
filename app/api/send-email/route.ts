@@ -32,8 +32,8 @@ export async function POST(req: Request) {
 
   const fromName = userSettings?.sending_name || senderName || 'Ozhenai';
   const fromAddress = userSettings?.sending_domain
-    ? `${fromName} <noreply@${userSettings.sending_domain}>`
-    : `${fromName} <noreply@info.ozhenai.com>`;
+    ? `${fromName} <hello@${userSettings.sending_domain}>`
+    : `${fromName} <hello@info.ozhenai.com>`;
 
   try {
     // Check if a thread already exists for this customer
