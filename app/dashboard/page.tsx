@@ -129,12 +129,22 @@ export default function Dashboard() {
   function daysColor(d: number) {
     return d <= 14 ? "#e05c5c" : d <= 40 ? "#c9a84c" : "#4caf7d";
   }
+  function daysRemaining(renewal_date: string, renew_days: number): number {
+    if (renewal_date) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const expiry = new Date(renewal_date);
+      expiry.setHours(0, 0, 0, 0);
+      return Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    }
+    return renew_days || 0;
+  }
 
   // Pipeline stats
   const totalARR = companies.reduce((sum, c) =>
     sum + c.contracts.reduce((s, ct) => s + (ct.arr || 0), 0), 0);
   const urgentCompanies = companies.filter(c =>
-    c.contracts.some(ct => ct.renew_days <= 30 && ct.renewal_status !== 'renewed'));
+    c.contracts.some(ct => daysRemaining(ct.renewal_date, ct.renew_days) <= 30 && ct.renewal_status !== 'renewed'));
   const urgentARR = urgentCompanies.reduce((sum, c) =>
     sum + c.contracts.filter(ct => ct.renew_days <= 30 && ct.renewal_status !== 'renewed').reduce((s, ct) => s + (ct.arr || 0), 0), 0);
   const upsellCompanies = companies.filter(c => c.upsell?.length > 0);
@@ -281,7 +291,9 @@ export default function Dashboard() {
               const totalContractARR = company.contracts.reduce((s, ct) => s + (ct.arr || 0), 0);
               const isUrgent = company.contracts.some(ct => ct.renew_days <= 30 && ct.renewal_status !== 'renewed');
               const isRenewed = company.contracts.length > 0 && company.contracts.every(ct => ct.renewal_status === 'renewed');
-              const nextRenewal = company.contracts.length > 0 ? Math.min(...company.contracts.map(ct => ct.renew_days)) : null;
+              const nextRenewal = company.contracts.length > 0
+                ? Math.min(...company.contracts.map(ct => daysRemaining(ct.renewal_date, ct.renew_days)))
+                : null;
               const hasUpsell = company.upsell?.length > 0;
               const hasRisk = company.risk?.length > 0;
 

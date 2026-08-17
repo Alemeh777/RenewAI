@@ -11,11 +11,10 @@ export async function POST(req: Request) {
   const { userId } = await auth();
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { company_id, contact_id, plan, arr, currency, renew_days } = await req.json();
-
+const { company_id, contact_id, plan, arr, currency, renewal_date } = await req.json(); 
   const { data, error } = await supabase
     .from('contracts')
-    .insert({ company_id, contact_id, plan, arr, currency, renew_days, user_id: userId })
+    .insert({ company_id, contact_id, plan, arr, currency, renewal_date, user_id: userId })
     .select()
     .single();
 
