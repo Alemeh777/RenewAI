@@ -153,44 +153,123 @@ export default function Home() {
         </div>
       </section>
 
-      {/* HOW IT WORKS */}
-      <section id="how" style={{ padding: "100px 48px", maxWidth: 860, margin: "0 auto" }}>
+      {/* HOW IT WORKS — ANIMATED MOCKS */}
+      <section id="how" style={{ padding: "100px 48px", maxWidth: 1100, margin: "0 auto" }}>
         <p style={{ fontSize: 11, letterSpacing: "0.18em", textTransform: "uppercase", color: "#6a675f", fontFamily: "monospace", marginBottom: 16, textAlign: "center" }}>How it works</p>
         <h2 style={{ fontSize: "clamp(24px, 3vw, 40px)", fontWeight: 700, textAlign: "center", marginBottom: 72, letterSpacing: "-0.02em", lineHeight: 1.1 }}>
           From account added<br />to renewal won
         </h2>
-        <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-          {[
-            {
-              title: "Add your accounts",
-              desc: "Name, domain, renewal date, ARR. Ozhenai auto-enriches with company news, signals, and growth indicators so you start with context, not a blank page.",
-              detail: "Works alongside whatever CRM you already use."
-            },
-            {
-              title: "Log meeting intelligence",
-              desc: "Paste a transcript or notes from any call — Fireflies, Otter, Teams, or your own. The AI extracts commitments, risks, upsell signals, and a grounded next step.",
-              detail: "Your account record updates automatically."
-            },
-            {
-              title: "Act on what matters",
-              desc: "Ozhenai drafts a contextual renewal or upsell email grounded in what was actually discussed. You review, edit, and approve. It sends when you say so — from your own address.",
-              detail: "You stay in control. Nothing sends without you."
-            },
-          ].map((item, i) => (
-            <div key={item.title} style={{ display: "grid", gridTemplateColumns: "56px 1fr", gap: 28, padding: "44px 0", borderBottom: i < 2 ? "1px solid rgba(201,168,76,0.07)" : "none" }}>
-              <div style={{ width: 36, height: 36, borderRadius: "50%", border: "1px solid rgba(201,168,76,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#c9a84c", fontFamily: "monospace", flexShrink: 0, marginTop: 2 }}>
-                {String(i + 1).padStart(2, "0")}
+
+        <div style={{ display: "flex", flexDirection: "column", gap: 80 }}>
+
+          {/* STEP 1 — Add account + auto-enrich */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
+            <div>
+              <div style={{ fontSize: 11, color: "#c9a84c", fontFamily: "monospace", letterSpacing: "0.12em", marginBottom: 12 }}>01 — ADD YOUR ACCOUNTS</div>
+              <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12, letterSpacing: "-0.01em" }}>Start with context, not a blank page</h3>
+              <p style={{ fontSize: 15, color: "#a8a49c", lineHeight: 1.75, margin: "0 0 12px" }}>Add a company name and domain. Ozhenai auto-enriches with company news, financial signals, and growth indicators before you've written a single word.</p>
+              <p style={{ fontSize: 12, color: "#6a675f", fontFamily: "monospace" }}>Works alongside whatever CRM you already use.</p>
+            </div>
+            {/* Mock: company card being enriched */}
+            <div style={{ background: "#161619", border: "1px solid rgba(201,168,76,0.12)", borderRadius: 14, padding: "20px", boxShadow: "0 20px 60px rgba(0,0,0,0.4)" }}>
+              <div style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 14 }}>New company</div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+                {[{ label: "Company", value: "Northlight SaaS", done: true }, { label: "Domain", value: "northlight.io", done: true }, { label: "ARR", value: "€22,500", done: true }].map(f => (
+                  <div key={f.label} style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", background: "#0d0d0f", borderRadius: 7, border: "1px solid rgba(201,168,76,0.08)" }}>
+                    <span style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace" }}>{f.label}</span>
+                    <span style={{ fontSize: 13, color: "#e8e4dc", fontWeight: 600 }}>{f.value}</span>
+                  </div>
+                ))}
               </div>
-              <div>
-                <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 10, letterSpacing: "-0.01em" }}>{item.title}</h3>
-                <p style={{ fontSize: 15, color: "#a8a49c", lineHeight: 1.75, margin: "0 0 8px" }}>{item.desc}</p>
-                <p style={{ fontSize: 12, color: "#6a675f", fontFamily: "monospace", margin: 0 }}>{item.detail}</p>
+              <div style={{ borderTop: "1px solid rgba(201,168,76,0.08)", paddingTop: 14 }}>
+                <div style={{ fontSize: 11, color: "#c9a84c", fontFamily: "monospace", marginBottom: 10 }}>⚡ AUTO-ENRICHED</div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  <div style={{ fontSize: 12, color: "#a8a49c", background: "rgba(201,168,76,0.05)", borderRadius: 6, padding: "6px 10px" }}>📰 Northlight raised Series A — €4.2M in March</div>
+                  <div style={{ fontSize: 12, color: "#4caf7d", background: "rgba(76,175,125,0.06)", borderRadius: 6, padding: "6px 10px" }}>🚀 Expanding into DACH market — upsell window</div>
+                  <div style={{ fontSize: 12, color: "#a8a49c", background: "rgba(201,168,76,0.05)", borderRadius: 6, padding: "6px 10px" }}>👥 Headcount grew 40% in 6 months</div>
+                </div>
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* STEP 2 — Meeting intelligence */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
+            {/* Mock: meeting extraction result */}
+            <div style={{ background: "#161619", border: "1px solid rgba(201,168,76,0.12)", borderRadius: 14, padding: "20px", boxShadow: "0 20px 60px rgba(0,0,0,0.4)", order: 0 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14, paddingBottom: 12, borderBottom: "1px solid rgba(201,168,76,0.08)" }}>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: 14 }}>Q3 Renewal Call</div>
+                  <div style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", marginTop: 2 }}>24 Jun 2026</div>
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <span style={{ fontSize: 10, background: "rgba(201,168,76,0.12)", color: "#c9a84c", padding: "2px 8px", borderRadius: 20, fontFamily: "monospace" }}>next step →</span>
+                  <span style={{ fontSize: 10, background: "rgba(224,92,92,0.1)", color: "#e05c5c", padding: "2px 8px", borderRadius: 20, fontFamily: "monospace" }}>2 risks</span>
+                  <span style={{ fontSize: 10, background: "rgba(76,175,125,0.1)", color: "#4caf7d", padding: "2px 8px", borderRadius: 20, fontFamily: "monospace" }}>1 upsell</span>
+                </div>
+              </div>
+              <div style={{ fontSize: 12, color: "#6a675f", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 6 }}>Summary</div>
+              <div style={{ fontSize: 13, color: "#a8a49c", lineHeight: 1.6, marginBottom: 14 }}>Team has grown from 12 to 25 people and they're hitting plan limits. Budget approved for renewal. Evaluating a competitor.</div>
+              <div style={{ background: "rgba(201,168,76,0.07)", border: "1px solid rgba(201,168,76,0.18)", borderRadius: 8, padding: "10px 12px", marginBottom: 12 }}>
+                <div style={{ fontSize: 10, color: "#c9a84c", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 4 }}>→ Next Step</div>
+                <div style={{ fontSize: 13, color: "#e8e4dc" }}>Send Growth vs Scale plan comparison by Friday, highlighting user seat capacity.</div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                <div style={{ background: "rgba(224,92,92,0.05)", border: "1px solid rgba(224,92,92,0.12)", borderRadius: 7, padding: "10px" }}>
+                  <div style={{ fontSize: 10, color: "#e05c5c", fontFamily: "monospace", marginBottom: 6 }}>⚠️ RISKS</div>
+                  <div style={{ fontSize: 12, color: "#e8e4dc" }}>— Competitor evaluation underway</div>
+                  <div style={{ fontSize: 12, color: "#e8e4dc" }}>— 2 users not yet activated</div>
+                </div>
+                <div style={{ background: "rgba(76,175,125,0.05)", border: "1px solid rgba(76,175,125,0.12)", borderRadius: 7, padding: "10px" }}>
+                  <div style={{ fontSize: 10, color: "#4caf7d", fontFamily: "monospace", marginBottom: 6 }}>🚀 UPSELL</div>
+                  <div style={{ fontSize: 12, color: "#e8e4dc" }}>— Team doubled, hitting seat limits</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: 11, color: "#c9a84c", fontFamily: "monospace", letterSpacing: "0.12em", marginBottom: 12 }}>02 — LOG MEETING INTELLIGENCE</div>
+              <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12, letterSpacing: "-0.01em" }}>What was said in the call, captured automatically</h3>
+              <p style={{ fontSize: 15, color: "#a8a49c", lineHeight: 1.75, margin: "0 0 12px" }}>Paste a transcript or notes from any call — Fireflies, Otter, Teams, or your own bullets. The AI extracts commitments, risks, upsell signals, and a specific next step in seconds.</p>
+              <p style={{ fontSize: 12, color: "#6a675f", fontFamily: "monospace" }}>Your account record updates automatically. Nothing gets lost.</p>
+            </div>
+          </div>
+
+          {/* STEP 3 — Email draft + approve */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 56, alignItems: "center" }}>
+            <div>
+              <div style={{ fontSize: 11, color: "#c9a84c", fontFamily: "monospace", letterSpacing: "0.12em", marginBottom: 12 }}>03 — ACT ON WHAT MATTERS</div>
+              <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12, letterSpacing: "-0.01em" }}>A draft that already knows the account</h3>
+              <p style={{ fontSize: 15, color: "#a8a49c", lineHeight: 1.75, margin: "0 0 12px" }}>Ozhenai drafts a renewal email grounded in what was actually discussed — the commitment you made, the risk you spotted, the upsell window you identified. Review, edit, approve. Sends from your address.</p>
+              <p style={{ fontSize: 12, color: "#6a675f", fontFamily: "monospace" }}>Nothing sends without your approval. You stay in control.</p>
+            </div>
+            {/* Mock: email draft in approval inbox */}
+            <div style={{ background: "#161619", border: "1px solid rgba(201,168,76,0.12)", borderRadius: 14, padding: "20px", boxShadow: "0 20px 60px rgba(0,0,0,0.4)" }}>
+              <div style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 14 }}>Approval inbox — 1 pending</div>
+              <div style={{ background: "#0d0d0f", border: "1px solid rgba(201,168,76,0.12)", borderRadius: 10, padding: "16px", marginBottom: 12 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
+                  <div>
+                    <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 2 }}>Northlight SaaS — Sarah Chen</div>
+                    <div style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace" }}>Re: Your Q3 renewal + Growth plan</div>
+                  </div>
+                  <span style={{ fontSize: 10, background: "rgba(201,168,76,0.12)", color: "#c9a84c", padding: "2px 8px", borderRadius: 20, fontFamily: "monospace", height: "fit-content" }}>pending</span>
+                </div>
+                <div style={{ fontSize: 13, color: "#a8a49c", lineHeight: 1.7, borderTop: "1px solid rgba(201,168,76,0.06)", paddingTop: 10 }}>
+                  Hi Sarah,<br /><br />
+                  Following up on our call — I've put together the Growth vs Scale comparison you asked for, with a focus on seat capacity given the team growth from 12 to 25...
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button style={{ flex: 1, background: "#c9a84c", color: "#0d0d0f", border: "none", padding: "9px", borderRadius: 7, fontWeight: 700, fontSize: 12, cursor: "pointer", fontFamily: "monospace" }}>
+                  ✓ Approve & send
+                </button>
+                <button style={{ background: "transparent", color: "#6a675f", border: "1px solid rgba(201,168,76,0.15)", padding: "9px 14px", borderRadius: 7, fontSize: 12, cursor: "pointer", fontFamily: "monospace" }}>
+                  Edit
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </section>
-
       {/* FEATURES */}
       <section style={{ padding: "80px 48px", background: "rgba(201,168,76,0.02)", borderTop: "1px solid rgba(201,168,76,0.08)" }}>
         <div style={{ maxWidth: 1000, margin: "0 auto" }}>
