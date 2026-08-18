@@ -16,6 +16,7 @@ type Contract = {
   arr: number;
   currency: string;
   renew_days: number;
+  renewal_date: string;
   renewal_status: string;
   contact_id: string;
 };
@@ -59,7 +60,7 @@ export default function CompanyPage() {
   const [showAddContact, setShowAddContact] = useState(false);
   const [showAddContract, setShowAddContract] = useState(false);
   const [contactForm, setContactForm] = useState({ name: "", email: "", job_title: "" });
-  const [contractForm, setContractForm] = useState({ plan: "", arr: "", currency: "€", renew_days: "90", contact_id: "" });
+  const [contractForm, setContractForm] = useState({ plan: "", arr: "", currency: "€", renewal_date: "", contact_id: "" });
   const [generatingFor, setGeneratingFor] = useState<string | null>(null);
   const [analysingFor, setAnalysingFor] = useState<string | null>(null);
   const [showEmailModal, setShowEmailModal] = useState(false);
@@ -127,11 +128,10 @@ export default function CompanyPage() {
       body: JSON.stringify({
         ...contractForm,
         arr: parseFloat(contractForm.arr),
-        renew_days: parseInt(contractForm.renew_days),
         company_id: id
       })
     });
-    setContractForm({ plan: "", arr: "", currency: "€", renew_days: "90", contact_id: "" });
+    setContractForm({ plan: "", arr: "", currency: "€", renewal_date: "", contact_id: "" });
     setShowAddContract(false);
     fetchCompany();
   }
@@ -180,7 +180,7 @@ export default function CompanyPage() {
             plan: contract.plan,
             arr: contract.arr,
             currency: contract.currency,
-            renew_days: contract.renew_days,
+            renew_days: daysRemaining(contract.renewal_date, contract.renew_days),
             health: company?.health || 75,
             intel: company?.intel || [],
             latest_news: company?.latest_news || "",
@@ -250,6 +250,17 @@ export default function CompanyPage() {
     setExtracting(false);
   }
 
+
+  function daysRemaining(renewal_date: string, renew_days: number): number {
+    if (renewal_date) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const expiry = new Date(renewal_date);
+      expiry.setHours(0, 0, 0, 0);
+      return Math.ceil((expiry.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+    }
+    return renew_days || 0;
+  }
   function daysColor(d: number) {
     return d <= 14 ? "#e05c5c" : d <= 40 ? "#c9a84c" : "#4caf7d";
   }
@@ -367,7 +378,7 @@ export default function CompanyPage() {
                       </div>
                       <div style={{ textAlign: "right" }}>
                         <div style={{ fontSize: 18, fontWeight: 700 }}>{contract.currency}{(contract.arr || 0).toLocaleString()}</div>
-                        <div style={{ fontSize: 13, color: daysColor(contract.renew_days), fontWeight: 700 }}>{contract.renew_days}d</div>
+                        <div style={{ fontSize: 13, color: daysColor(daysRemaining(contract.renewal_date, contract.renew_days)), fontWeight: 700 }}>{daysRemaining(contract.renewal_date, contract.renew_days)}d</div>
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -585,12 +596,12 @@ export default function CompanyPage() {
               {[
                 { key: "plan", label: "Plan Name *", placeholder: "Annual Pro" },
                 { key: "arr", label: "ARR *", placeholder: "7000" },
-                { key: "renew_days", label: "Days to Renewal", placeholder: "90" },
+                { key: "renewal_date", label: "Renewal Date", placeholder: "" },
               ].map(f => (
                 <div key={f.key}>
                   <label style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", textTransform: "uppercase", display: "block", marginBottom: 4 }}>{f.label}</label>
                   <input value={(contractForm as any)[f.key]} onChange={e => setContractForm({ ...contractForm, [f.key]: e.target.value })}
-                    placeholder={f.placeholder} type={f.key === "arr" || f.key === "renew_days" ? "number" : "text"}
+                    placeholder={f.placeholder} type={f.key === "arr" ? "number" : f.key === "renewal_date" ? "date" : "text"}
                     style={{ width: "100%", padding: "9px 12px", background: "#0d0d0f", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 7, color: "#e8e4dc", fontSize: 13, outline: "none", boxSizing: "border-box" }} />
                 </div>
               ))}

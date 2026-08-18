@@ -16,6 +16,7 @@ type Contract = {
   arr: number;
   currency: string;
   renew_days: number;
+  renewal_date: string;
   renewal_status: string;
   contact_id: string;
 };
@@ -126,9 +127,7 @@ export default function Dashboard() {
     setSchedulerRunning(false);
   }
 
-  function daysColor(d: number) {
-    return d <= 14 ? "#e05c5c" : d <= 40 ? "#c9a84c" : "#4caf7d";
-  }
+
   function daysRemaining(renewal_date: string, renew_days: number): number {
     if (renewal_date) {
       const today = new Date();
@@ -139,6 +138,9 @@ export default function Dashboard() {
     }
     return renew_days || 0;
   }
+  function daysColor(d: number) {
+    return d <= 14 ? "#e05c5c" : d <= 40 ? "#c9a84c" : "#4caf7d";
+  }
 
   // Pipeline stats
   const totalARR = companies.reduce((sum, c) =>
@@ -146,7 +148,7 @@ export default function Dashboard() {
   const urgentCompanies = companies.filter(c =>
     c.contracts.some(ct => daysRemaining(ct.renewal_date, ct.renew_days) <= 30 && ct.renewal_status !== 'renewed'));
   const urgentARR = urgentCompanies.reduce((sum, c) =>
-    sum + c.contracts.filter(ct => ct.renew_days <= 30 && ct.renewal_status !== 'renewed').reduce((s, ct) => s + (ct.arr || 0), 0), 0);
+    sum + c.contracts.filter(ct => daysRemaining(ct.renewal_date, ct.renew_days) <= 30 && ct.renewal_status !== 'renewed').reduce((s, ct) => s + (ct.arr || 0), 0), 0);
   const upsellCompanies = companies.filter(c => c.upsell?.length > 0);
   const riskCompanies = companies.filter(c => c.risk?.length > 0);
   const renewedCount = companies.filter(c => c.contracts.some(ct => ct.renewal_status === 'renewed')).length;
@@ -154,7 +156,7 @@ export default function Dashboard() {
 
   // Filter logic
   const filtered = companies.filter(c => {
-    if (filter === "urgent") return c.contracts.some(ct => ct.renew_days <= 30 && ct.renewal_status !== 'renewed');
+    if (filter === "urgent") return c.contracts.some(ct => daysRemaining(ct.renewal_date, ct.renew_days) <= 30 && ct.renewal_status !== 'renewed');
     if (filter === "upsell") return c.upsell?.length > 0;
     if (filter === "risk") return c.risk?.length > 0;
     return true;
@@ -162,8 +164,8 @@ export default function Dashboard() {
 
   // Sort: urgent first, then by days to renewal
   const sorted = [...filtered].sort((a, b) => {
-    const aMin = a.contracts.length ? Math.min(...a.contracts.map(ct => ct.renew_days)) : 999;
-    const bMin = b.contracts.length ? Math.min(...b.contracts.map(ct => ct.renew_days)) : 999;
+    const aMin = a.contracts.length ? Math.min(...a.contracts.map(ct => daysRemaining(ct.renewal_date, ct.renew_days))) : 999;
+    const bMin = b.contracts.length ? Math.min(...b.contracts.map(ct => daysRemaining(ct.renewal_date, ct.renew_days))) : 999;
     return aMin - bMin;
   });
 
@@ -289,11 +291,9 @@ export default function Dashboard() {
           <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {sorted.map(company => {
               const totalContractARR = company.contracts.reduce((s, ct) => s + (ct.arr || 0), 0);
-              const isUrgent = company.contracts.some(ct => ct.renew_days <= 30 && ct.renewal_status !== 'renewed');
+              const isUrgent = company.contracts.some(ct => daysRemaining(ct.renewal_date, ct.renew_days) <= 30 && ct.renewal_status !== 'renewed');
               const isRenewed = company.contracts.length > 0 && company.contracts.every(ct => ct.renewal_status === 'renewed');
-              const nextRenewal = company.contracts.length > 0
-                ? Math.min(...company.contracts.map(ct => daysRemaining(ct.renewal_date, ct.renew_days)))
-                : null;
+              const nextRenewal = company.contracts.length > 0 ? Math.min(...company.contracts.map(ct => daysRemaining(ct.renewal_date, ct.renew_days))) : null;
               const hasUpsell = company.upsell?.length > 0;
               const hasRisk = company.risk?.length > 0;
 
