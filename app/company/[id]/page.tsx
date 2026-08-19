@@ -304,10 +304,11 @@ export default function CompanyPage() {
               </div>
             )}
             {company.intel?.length > 0 && (
-              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
                 {company.intel.slice(0, 3).map((item, i) => (
                   <span key={i} style={{ fontSize: 11, background: "rgba(201,168,76,0.1)", color: "#c9a84c", padding: "3px 10px", borderRadius: 20 }}>{item}</span>
                 ))}
+                <span style={{ fontSize: 10, color: "#4a4740", fontFamily: "monospace", marginLeft: 4 }}>✦ AI generated</span>
               </div>
             )}
           </div>
@@ -414,7 +415,10 @@ export default function CompanyPage() {
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginTop: 24 }}>
             {company.upsell?.length > 0 && (
               <div style={{ background: "rgba(76,175,125,0.05)", border: "1px solid rgba(76,175,125,0.15)", borderRadius: 12, padding: "20px" }}>
-                <div style={{ fontSize: 12, color: "#4caf7d", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 12 }}>🚀 Upsell Signals</div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <div style={{ fontSize: 12, color: "#4caf7d", fontFamily: "monospace", textTransform: "uppercase" }}>🚀 Upsell Signals</div>
+                  <span style={{ fontSize: 10, color: "#4a4740", fontFamily: "monospace" }}>✦ AI generated</span>
+                </div>
                 {company.upsell.map((s, i) => (
                   <div key={i} style={{ fontSize: 13, color: "#e8e4dc", marginBottom: 6 }}>— {s}</div>
                 ))}
@@ -422,7 +426,10 @@ export default function CompanyPage() {
             )}
             {company.risk?.length > 0 && (
               <div style={{ background: "rgba(224,92,92,0.05)", border: "1px solid rgba(224,92,92,0.15)", borderRadius: 12, padding: "20px" }}>
-                <div style={{ fontSize: 12, color: "#e05c5c", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 12 }}>⚠️ Risk Signals</div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+                  <div style={{ fontSize: 12, color: "#e05c5c", fontFamily: "monospace", textTransform: "uppercase" }}>⚠️ Risk Signals</div>
+                  <span style={{ fontSize: 10, color: "#4a4740", fontFamily: "monospace" }}>✦ AI generated</span>
+                </div>
                 {company.risk.map((s, i) => (
                   <div key={i} style={{ fontSize: 13, color: "#e8e4dc", marginBottom: 6 }}>— {s}</div>
                 ))}
@@ -479,7 +486,10 @@ export default function CompanyPage() {
                       {/* Summary */}
                       {meeting.summary && (
                         <div>
-                          <div style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", textTransform: "uppercase", marginBottom: 6 }}>Summary</div>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                            <div style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", textTransform: "uppercase" }}>Summary</div>
+                            <span style={{ fontSize: 10, color: "#4a4740", fontFamily: "monospace" }}>✦ AI generated</span>
+                          </div>
                           <div style={{ fontSize: 13, color: "#a8a49c", lineHeight: 1.7 }}>{meeting.summary}</div>
                         </div>
                       )}
