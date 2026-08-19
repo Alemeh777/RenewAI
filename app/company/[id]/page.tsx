@@ -313,8 +313,7 @@ export default function CompanyPage() {
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 12, alignItems: "flex-end" }}>
             <div style={{ textAlign: "right" }}>
-              <div style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", marginBottom: 2 }}>HEALTH</div>
-              <div style={{ fontSize: 24, fontWeight: 700, color: company.health > 80 ? "#4caf7d" : company.health > 60 ? "#c9a84c" : "#e05c5c" }}>{company.health}/100</div>
+<div style={{ fontSize: 11, color: "#6a675f", fontFamily: "monospace", marginBottom: 2 }}>ACCOUNT HEALTH</div>              <div style={{ fontSize: 24, fontWeight: 700, color: company.health > 80 ? "#4caf7d" : company.health > 60 ? "#c9a84c" : "#e05c5c" }}>{company.health}/100</div>
             </div>
             <button onClick={analyseCompany} disabled={analysingFor === id}
               style={{ background: "rgba(76,175,125,0.15)", color: "#4caf7d", border: "1px solid rgba(76,175,125,0.3)", padding: "7px 16px", borderRadius: 7, fontSize: 12, cursor: "pointer", fontFamily: "monospace" }}>
