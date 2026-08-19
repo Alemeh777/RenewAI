@@ -44,7 +44,7 @@ Return ONLY valid JSON, no preamble and no markdown code fences, in exactly this
 {
   "summary": "2-4 sentence recap of what was discussed",
   "commitments": [{ "text": "what was promised", "owner": "who owns it (the CSM, the customer, or a named person)" }],
-  "risks": ["concrete churn or dissatisfaction signal raised in the meeting"],
+  "risks": ["account-level risk signal — describe the contract, usage, or commercial situation, never a named person or personal attribute"],
   "upsell_signals": ["concrete sign of expansion appetite or unmet need that maps to more product"],
   "renewal_facts": ["fact that affects the renewal: budget, timing, decision-maker, contract term, competitor mentioned, etc."],
   "next_step": "ONE specific next action grounded in something actually said - an unanswered question, an unowned commitment, a deferred topic. Not generic."
